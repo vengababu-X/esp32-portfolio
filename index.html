@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boligorla Vengababu | Embedded Systems & Railway Electronics Engineer | Portfolio</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pcb: {
+              mask: '#081a12',
+              maskBorder: '#123b28',
+              gold: '#d4af37',
+              goldBright: '#fef08a',
+              copper: '#b87333',
+              silk: '#f8fafc',
+              trace: '#14402c',
+              traceGlow: '#10b981'
+            },
+            bench: {
+              bg: '#05080c',
+              mat: '#070c12',
+              panel: '#091018',
+              card: '#0d1520',
+              border: '#152230',
+              accent: '#06b6d4',
+              meter: '#eab308'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ESD Engineering Bench Surface */
+    body {
+      background-color: #05080c;
+      background-image: 
+        linear-gradient(to right, rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+        linear-gradient(to right, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
+      background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Trace Power Current Animation */
+    @keyframes traceFlow {
+      0% { stroke-dashoffset: 100; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .trace-active {
+      stroke: #10b981 !important;
+      filter: drop-shadow(0 0 5px #10b981);
+      stroke-dasharray: 6, 4;
+      animation: traceFlow 1.2s linear infinite;
+    }
+
+    /* SMD LED Optical Glows */
+    .led-off { opacity: 0.15; filter: none !important; }
+    .led-red { fill: #ef4444 !important; filter: drop-shadow(0 0 8px #ef4444) drop-shadow(0 0 16px #dc2626); }
+    .led-cyan { fill: #06b6d4 !important; filter: drop-shadow(0 0 8px #06b6d4) drop-shadow(0 0 16px #0284c7); }
+    .led-amber { fill: #f59e0b !important; filter: drop-shadow(0 0 6px #f59e0b); }
+    .led-green { fill: #10b981 !important; filter: drop-shadow(0 0 6px #10b981); }
+
+    /* Heartbeat animation */
+    @keyframes heartbeatPulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.96); }
+      15% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 12px #06b6d4); }
+      30% { opacity: 0.35; transform: scale(1); }
+      45% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 16px #06b6d4); }
+      60% { opacity: 0.25; transform: scale(0.96); }
+    }
+    .anim-heartbeat { animation: heartbeatPulse 1.3s ease-in-out infinite; transform-origin: center; }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #05080c; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+
+    /* Print Stylesheet Optimized for A4 / Letter Single & Dual Page ATS Export */
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; font-size: 11pt !important; }
+      .no-print { display: none !important; }
+      #resume-modal { display: block !important; position: static !important; background: #ffffff !important; color: #000000 !important; max-width: 100% !important; padding: 0 !important; box-shadow: none !important; }
+      #resume-modal * { color: #000000 !important; border-color: #cbd5e1 !important; background-color: transparent !important; }
+      .print-border-b { border-bottom: 1.5px solid #0f172a !important; }
+      .print-header-color { color: #0f172a !important; }
+      a { text-decoration: none !important; color: #0f172a !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
+
+  <!-- ============================================================== -->
+  <!-- TOP TELEMETRY & SYSTEM STATUS DOCK                             -->
+  <!-- ============================================================== -->
+  <header class="sticky top-0 z-40 bg-bench-panel/95 backdrop-blur border-b border-bench-border shadow-2xl no-print">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Engineer Identity -->
+      <div class="flex items-center gap-3">
+        <div class="relative flex items-center justify-center">
+          <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span>
+          <span class="absolute w-5 h-5 rounded-full border border-emerald-400/40 animate-ping"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-black tracking-wide text-white font-mono">BOLIGORLA VENGABABU</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">TARGET: MEDHA & ECIL HYD</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono flex items-center gap-2">
+            <span>B.Tech ECE (2023–2027) &bull; CGPA: 8.42/10.0</span>
+            <span class="text-slate-600">&bull;</span>
+            <span class="text-cyan-400">Railway Traction &bull; Industrial Protocols &bull; Embedded Systems &bull; VLSI</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Benchtop Multimeter & Bus Telemetry -->
+      <div class="flex items-center gap-3 sm:gap-4 bg-black/70 px-3.5 py-1.5 rounded-xl border border-slate-800 font-mono text-xs">
+        <div class="flex flex-col">
+          <span class="text-[9px] uppercase tracking-wider text-slate-400">VBUS (USB-C)</span>
+          <span id="readout-vbus" class="font-bold text-slate-500 text-sm">0.00 V</span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div class="flex flex-col">
+          <span class="text-[9px] uppercase tracking-wider text-slate-400">3V3 RAIL</span>
+          <span id="readout-3v3" class="font-bold text-slate-500 text-sm">0.00 V</span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div class="flex flex-col hidden sm:flex">
+          <span class="text-[9px] uppercase tracking-wider text-slate-400">CURRENT</span>
+          <span id="readout-current" class="font-bold text-slate-500 text-sm">0 mA</span>
+        </div>
+        <div class="h-6 w-px bg-slate-800 hidden sm:block"></div>
+        <div class="flex flex-col hidden md:flex">
+          <span class="text-[9px] uppercase tracking-wider text-slate-400">XTAL CLK</span>
+          <span id="readout-xtal" class="font-bold text-slate-500 text-sm">OFF</span>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <button id="btn-audio" onclick="toggleAudio()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-cyan-300 flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 5v14l-5-4H4a1 1 0 01-1-1v-4a1 1 0 011-1h3l5-4z"/></svg>
+          <span id="lbl-audio">SFX: ON</span>
+        </button>
+
+        <button id="btn-power" onclick="togglePower()" class="px-3.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/60 border border-emerald-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span id="lbl-power">PLUG IN USB-C (5V)</span>
+        </button>
+
+        <button onclick="autoBoot()" class="hidden lg:flex px-3 py-1.5 rounded-lg font-semibold bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/60 transition items-center gap-1.5">
+          <span>AUTO-BOOT</span>
+        </button>
+
+        <!-- PRINTABLE RESUME (Optimized for Medha Servo Drives & ECIL Hyderabad) -->
+        <button onclick="openResumeModal()" class="px-3.5 py-1.5 rounded-lg font-bold bg-amber-950 hover:bg-amber-900 text-amber-300 border border-amber-600/70 shadow-lg flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>MEDHA & ECIL RESUME</span>
+        </button>
+
+        <!-- DOWNLOAD WORD RESUME (.DOCX) -->
+        <a href="Boligorla_Vengababu_Resume.docx" download="Boligorla_Vengababu_Resume.docx" class="px-3.5 py-1.5 rounded-lg font-bold bg-blue-950 hover:bg-blue-900 text-blue-300 border border-blue-600/70 shadow-lg flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>DOWNLOAD .DOCX</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============================================================== -->
+  <!-- HARDWARE ARCHITECTURE TO RESUME BLENDING TABS                  -->
+  <!-- ============================================================== -->
+  <div class="bg-bench-panel/90 border-b border-bench-border py-2.5 px-4 no-print overflow-x-auto">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 font-mono text-xs">
+      
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          BLENDED ARCHITECTURE:
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <button onclick="switchTab('rf')" id="tab-btn-rf" class="arch-tab-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-950 text-cyan-300 border border-cyan-600 flex items-center gap-1.5 whitespace-nowrap shadow-md">
+          <span>📡 1. RF ANTENNA &bull; PROFILE</span>
+        </button>
+        <button onclick="switchTab('projects')" id="tab-btn-projects" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>⚙️ 2. EXPANSION BUS &bull; 5 PROJECTS</span>
+        </button>
+        <button onclick="switchTab('cpu')" id="tab-btn-cpu" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>🧠 3. LX6 CPU &bull; 8 SKILLS</span>
+        </button>
+        <button onclick="switchTab('uart')" id="tab-btn-uart" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>🔬 4. CP2102 &bull; RESEARCH & COMM</span>
+        </button>
+        <button onclick="switchTab('ldo')" id="tab-btn-ldo" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>⚡ 5. AMS1117 &bull; EDU & INTERESTS</span>
+        </button>
+        <button onclick="switchTab('status')" id="tab-btn-status" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>🏆 6. LEDS &bull; ACHIEVEMENTS</span>
+        </button>
+        <button onclick="switchTab('ide')" id="tab-btn-ide" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-cyan-300 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>💻 FIRMWARE IDE</span>
+        </button>
+        <button onclick="switchTab('games')" id="tab-btn-games" class="arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-purple-300 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <span>🎮 GAMES</span>
+        </button>
+      </div>
+
+      <div class="hidden xl:flex items-center gap-2 shrink-0 text-slate-400">
+        <span>Kavali, AP, India</span>
+        <span>&bull;</span>
+        <a href="mailto:boligorlavengababu@gmail.com" class="text-cyan-400 hover:underline">boligorlavengababu@gmail.com</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- REALISTIC WORKBENCH TOOLS & INSTRUMENTS STRIP (STATIC OBJECTS)  -->
+  <!-- ============================================================== -->
+  <section class="max-w-7xl mx-auto px-4 pt-3 pb-1 w-full no-print">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 font-mono text-xs">
+      
+      <!-- Static Object 1: Digital Multimeter (Fluke Yellow) -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-amber-600/50 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-amber-400">DMM</span>
+          <span class="text-[10px] font-black text-amber-300">V==</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">FLUKE DMM PROBE</span>
+          <span id="static-dmm-val" class="font-bold text-amber-300 text-xs">3.301 V DC</span>
+          <span class="text-[8px] text-slate-500 block truncate">Pin 1 (3V3) &bull; True RMS</span>
+        </div>
+      </div>
+
+      <!-- Static Object 2: ESD Anti-Static Wrist Strap -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-cyan-800/60 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-cyan-950 border border-cyan-600 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-cyan-400">ESD</span>
+          <span class="text-[10px] font-black text-cyan-300">&perp;</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">BENCH GROUNDING</span>
+          <span class="font-bold text-emerald-400 text-xs">SAFE (1.0 M&Omega;)</span>
+          <span class="text-[8px] text-slate-500 block truncate">Coiled Ground Mat Clamp</span>
+        </div>
+      </div>
+
+      <!-- Static Object 3: 40.000 MHz Crystal Oscillator -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-700 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-500 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-slate-400">XTAL</span>
+          <span class="text-[9px] font-bold text-slate-200">40M</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">SYSTEM RESONATOR</span>
+          <span class="font-bold text-purple-300 text-xs">40.000 MHz</span>
+          <span class="text-[8px] text-slate-500 block truncate">&plusmn;10ppm SMD Metal Can</span>
+        </div>
+      </div>
+
+      <!-- Static Object 4: HC-SR04 Sensor on Breadboard -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-emerald-800/60 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-emerald-950 border border-emerald-600 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-emerald-400">HC-SR04</span>
+          <span class="text-[10px] font-black text-emerald-300">(( &bull; ))</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">BREADBOARD SENSOR</span>
+          <span class="font-bold text-emerald-300 text-xs">TRIG/ECHO JUMPER</span>
+          <span class="text-[8px] text-slate-500 block truncate">Pins D12 / D14 Wired</span>
+        </div>
+      </div>
+
+      <!-- Static Object 5: Precision Tweezers & SMD Tape -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-700 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-500 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-slate-400">SMD</span>
+          <span class="text-[9px] font-bold text-slate-200">0805</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">PASSIVES TRAY</span>
+          <span class="font-bold text-slate-200 text-xs">10k&Omega; &bull; 100nF</span>
+          <span class="text-[8px] text-slate-500 block truncate">Curved Titanium Tweezers</span>
+        </div>
+      </div>
+
+      <!-- Static Object 6: Logic Analyzer Probe Leads -->
+      <div class="p-2.5 rounded-xl bg-slate-950/90 border border-rose-800/60 flex items-center gap-3 shadow-lg">
+        <div class="w-10 h-10 rounded-lg bg-rose-950 border border-rose-600 flex flex-col items-center justify-center shrink-0">
+          <span class="text-[8px] font-bold text-rose-400">PROBES</span>
+          <span class="text-[9px] font-bold text-rose-300">CH1/2</span>
+        </div>
+        <div class="truncate">
+          <span class="text-[9px] text-slate-400 block uppercase">LOGIC CLIPS</span>
+          <span class="font-bold text-rose-300 text-xs">SCL &bull; SDA BUS</span>
+          <span class="text-[8px] text-slate-500 block truncate">I2C 400kHz Fast-Mode</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MAIN WORKBENCH: HARDWARE CONTROLLER + BLENDED SECTIONS         -->
+  <!-- ============================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex flex-col gap-5 no-print">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- ============================================================ -->
+      <!-- LEFT COL: PHOTOREALISTIC VERTICAL ESP32 BOARD                -->
+      <!-- ============================================================ -->
+      <section class="lg:col-span-4 bg-bench-panel rounded-2xl border border-bench-border p-4 shadow-2xl flex flex-col items-center relative overflow-hidden">
+        
+        <div class="w-full flex items-center justify-between text-[10px] font-mono text-slate-500 pb-2 border-b border-slate-800 mb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>ESP32-WROOM-32 DEVKITC V4</span>
+          </div>
+          <span>ENIG GOLD PLATING</span>
+        </div>
+
+        <!-- Draggable / Clickable USB-C Cable Receptacle Notice -->
+        <div class="w-full mb-3 flex flex-col items-center">
+          <div id="usb-cable-card" onclick="togglePower()" class="cursor-pointer group flex items-center gap-2.5 bg-slate-950 px-3.5 py-1.5 rounded-full border border-slate-700 hover:border-cyan-400 shadow-md transition">
+            <div id="plug-body" class="w-6 h-3 rounded-sm bg-gradient-to-r from-slate-300 to-slate-100 border border-slate-400 flex items-center justify-center shadow-inner">
+              <div class="w-3.5 h-1 bg-slate-800 rounded-full"></div>
+            </div>
+            <span id="plug-text" class="text-[11px] font-mono font-semibold text-slate-300 group-hover:text-cyan-300">
+              DRAG / CLICK &rarr; PLUG IN USB-C (5V)
+            </span>
+            <div id="plug-led" class="w-2 h-2 rounded-full bg-slate-600"></div>
+          </div>
+        </div>
+
+        <!-- High-Detail Vertical ESP32 SVG Board with Static Passives & Crystals -->
+        <div class="relative w-full max-w-[340px] select-none">
+          <svg id="esp32-svg" viewBox="0 0 320 640" class="w-full h-auto drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)]">
+            <defs>
+              <linearGradient id="pcbMask" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#081a12" />
+                <stop offset="50%" stop-color="#103322" />
+                <stop offset="100%" stop-color="#06150e" />
+              </linearGradient>
+
+              <linearGradient id="metalShield" x1="0%" y1="0%" x2="100%" y2="80%">
+                <stop offset="0%" stop-color="#334155" />
+                <stop offset="20%" stop-color="#94a3b8" />
+                <stop offset="45%" stop-color="#475569" />
+                <stop offset="70%" stop-color="#cbd5e1" />
+                <stop offset="90%" stop-color="#1e293b" />
+                <stop offset="100%" stop-color="#334155" />
+              </linearGradient>
+
+              <linearGradient id="crystalCan" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#e2e8f0" />
+                <stop offset="50%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#475569" />
+              </linearGradient>
+
+              <linearGradient id="goldPad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a" />
+                <stop offset="40%" stop-color="#d4af37" />
+                <stop offset="100%" stop-color="#854d0e" />
+              </linearGradient>
+
+              <linearGradient id="icEpoxy" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#262626" />
+                <stop offset="100%" stop-color="#0a0a0a" />
+              </linearGradient>
+            </defs>
+
+            <!-- Board Substrate with ground plane edge bevel -->
+            <rect x="10" y="10" width="300" height="620" rx="16" fill="url(#pcbMask)" stroke="#164732" stroke-width="2.5" />
+
+            <!-- Mounting Holes with ENIG Gold Stitching Vias -->
+            <g>
+              <circle cx="28" cy="28" r="9" fill="url(#goldPad)" /><circle cx="28" cy="28" r="5" fill="#05080c" />
+              <circle cx="292" cy="28" r="9" fill="url(#goldPad)" /><circle cx="292" cy="28" r="5" fill="#05080c" />
+              <circle cx="28" cy="612" r="9" fill="url(#goldPad)" /><circle cx="28" cy="612" r="5" fill="#05080c" />
+              <circle cx="292" cy="612" r="9" fill="url(#goldPad)" /><circle cx="292" cy="612" r="5" fill="#05080c" />
+            </g>
+
+            <!-- 2.4 GHz Antenna (Block 1) -->
+            <g id="hw-antenna" class="cursor-pointer" onclick="switchTab('rf')">
+              <rect x="80" y="24" width="160" height="42" rx="3" fill="#05100a" stroke="#143322" stroke-width="1.5" />
+              <path d="M92,60 L92,34 L110,34 L110,54 L128,54 L128,34 L146,34 L146,54 L164,54 L164,34 L182,34 L182,54 L200,54 L200,34 L218,34 L218,60" 
+                    fill="none" stroke="url(#goldPad)" stroke-width="3" stroke-linecap="square" />
+              <text x="160" y="58" font-family="'JetBrains Mono'" font-size="7" fill="#fbbf24" text-anchor="middle" font-weight="bold">2.4GHz MIFA (RF PROFILE)</text>
+            </g>
+
+            <!-- Metal RF Can (ESP-WROOM-32) -->
+            <g id="hw-wroom" class="cursor-pointer" onclick="switchTab('rf')">
+              <rect x="65" y="75" width="190" height="150" rx="6" fill="url(#metalShield)" stroke="#64748b" stroke-width="2" />
+              <rect x="70" y="80" width="180" height="140" rx="4" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4,2" />
+              
+              <text x="160" y="105" font-family="'JetBrains Mono'" font-size="14" font-weight="900" fill="#f8fafc" text-anchor="middle" letter-spacing="1">ESP-WROOM-32</text>
+              <text x="160" y="120" font-family="'JetBrains Mono'" font-size="8" fill="#cbd5e1" text-anchor="middle">FCC ID: 2AC7Z-ESPWROOM32</text>
+              <text x="160" y="134" font-family="'JetBrains Mono'" font-size="7.5" fill="#94a3b8" text-anchor="middle">240MHz DUAL-CORE &bull; 520KB SRAM</text>
+              
+              <text x="160" y="156" font-family="'Inter'" font-size="9" font-weight="800" fill="#38bdf8" text-anchor="middle">BOLIGORLA VENGABABU</text>
+              <text x="160" y="170" font-family="'JetBrains Mono'" font-size="7.5" fill="#cbd5e1" text-anchor="middle">MEDHA & ECIL APPLICANT</text>
+              <text x="160" y="184" font-family="'JetBrains Mono'" font-size="7" fill="#34d399" text-anchor="middle">RAILWAY TRACTION &bull; EMBEDDED</text>
+              
+              <rect x="100" y="196" width="120" height="18" rx="9" fill="#0f172a" stroke="#06b6d4" stroke-width="1" />
+              <text x="160" y="208" font-family="'JetBrains Mono'" font-size="7" font-weight="bold" fill="#38bdf8" text-anchor="middle">CLICK: CANDIDATE PROFILE</text>
+            </g>
+
+            <!-- Static Hardware Object: 40.000 MHz Crystal Oscillator on Board -->
+            <g id="hw-xtal-40m">
+              <rect x="180" y="235" width="28" height="18" rx="2" fill="url(#crystalCan)" stroke="#64748b" stroke-width="1" />
+              <rect x="178" y="238" width="2" height="12" fill="url(#goldPad)" />
+              <rect x="208" y="238" width="2" height="12" fill="url(#goldPad)" />
+              <text x="194" y="247" font-family="'JetBrains Mono'" font-size="5" font-weight="bold" fill="#0f172a" text-anchor="middle">40.0M</text>
+            </g>
+
+            <!-- Static Hardware Object: 32.768 kHz RTC Tuning Fork Crystal -->
+            <g id="hw-xtal-rtc">
+              <rect x="115" y="235" width="24" height="14" rx="2" fill="url(#crystalCan)" stroke="#64748b" stroke-width="1" />
+              <text x="127" y="245" font-family="'JetBrains Mono'" font-size="4.5" fill="#0f172a" text-anchor="middle">32.7K</text>
+            </g>
+
+            <!-- Static Hardware Objects: SMD 0805 Passives (Resistors & Capacitors with Solder Joints) -->
+            <rect x="68" y="270" width="12" height="6" fill="#18181b" stroke="#71717a" stroke-width="0.8" />
+            <rect x="66" y="270" width="2" height="6" fill="#cbd5e1" />
+            <rect x="80" y="270" width="2" height="6" fill="#cbd5e1" />
+            <text x="74" y="267" font-family="'JetBrains Mono'" font-size="4.5" fill="#94a3b8" text-anchor="middle">103</text>
+
+            <rect x="90" y="270" width="12" height="6" fill="#b45309" stroke="#71717a" stroke-width="0.8" />
+            <rect x="88" y="270" width="2" height="6" fill="#cbd5e1" />
+            <rect x="102" y="270" width="2" height="6" fill="#cbd5e1" />
+            <text x="96" y="267" font-family="'JetBrains Mono'" font-size="4.5" fill="#94a3b8" text-anchor="middle">100n</text>
+
+            <rect x="220" y="270" width="12" height="6" fill="#18181b" stroke="#71717a" stroke-width="0.8" />
+            <rect x="238" y="270" width="12" height="6" fill="#18181b" stroke="#71717a" stroke-width="0.8" />
+            <text x="226" y="267" font-family="'JetBrains Mono'" font-size="4.5" fill="#94a3b8" text-anchor="middle">472</text>
+            <text x="244" y="267" font-family="'JetBrains Mono'" font-size="4.5" fill="#94a3b8" text-anchor="middle">472</text>
+
+            <!-- Dual-in-Line 30 Headers -->
+            <g id="v-header-left"></g>
+            <g id="v-header-right"></g>
+
+            <!-- Copper Traces -->
+            <g id="v-traces" stroke="#163e2d" stroke-width="2" fill="none" stroke-linecap="round">
+              <path id="tr-5v" d="M160,590 L160,540 L125,510 L125,450" />
+              <path id="tr-3v3" d="M125,410 L125,350 L95,330 L95,230" />
+              <path id="tr-uart" d="M185,410 L185,320 L210,280 L210,230" />
+              <path id="tr-gpio2" d="M140,230 L140,280 L110,300" />
+            </g>
+
+            <!-- CP2102 Bridge (Block 4: Research & Comm) -->
+            <g id="hw-cp2102" class="cursor-pointer" onclick="switchTab('uart')">
+              <rect x="130" y="380" width="60" height="60" rx="3" fill="url(#icEpoxy)" stroke="#52525b" stroke-width="1.5" />
+              <circle cx="138" cy="388" r="2.5" fill="#71717a" />
+              <text x="160" y="405" font-family="'JetBrains Mono'" font-size="8" font-weight="bold" fill="#f8fafc" text-anchor="middle">CP2102</text>
+              <text x="160" y="416" font-family="'JetBrains Mono'" font-size="6.5" fill="#38bdf8" text-anchor="middle">UART BRIDGE</text>
+              <text x="160" y="427" font-family="'JetBrains Mono'" font-size="6" fill="#fbbf24" text-anchor="middle">RESEARCH COLLAB</text>
+            </g>
+
+            <!-- AMS1117 LDO (Block 5: Education & Interests) -->
+            <g id="hw-ams1117" class="cursor-pointer" onclick="switchTab('ldo')">
+              <rect x="100" y="470" width="45" height="30" rx="2" fill="url(#icEpoxy)" stroke="#52525b" stroke-width="1.2" />
+              <rect x="110" y="465" width="25" height="5" fill="url(#goldPad)" />
+              <text x="122" y="486" font-family="'JetBrains Mono'" font-size="7" font-weight="bold" fill="#f8fafc" text-anchor="middle">AMS1117</text>
+              <text x="122" y="495" font-family="'JetBrains Mono'" font-size="6" fill="#34d399" text-anchor="middle">3.3V &bull; EDU</text>
+            </g>
+
+            <!-- Central Expansion Bus Silkscreen (Block 2: 5 Projects) -->
+            <g id="hw-projects" class="cursor-pointer" onclick="switchTab('projects')">
+              <rect x="175" y="465" width="65" height="40" rx="3" fill="#0d2419" stroke="#10b981" stroke-width="1.2" stroke-dasharray="2,2" />
+              <text x="207" y="482" font-family="'JetBrains Mono'" font-size="7" font-weight="bold" fill="#34d399" text-anchor="middle">EXPANSION</text>
+              <text x="207" y="493" font-family="'JetBrains Mono'" font-size="6" fill="#86efac" text-anchor="middle">5 PROJECTS</text>
+            </g>
+
+            <!-- SMD LEDs (PWR, GPIO2, TX, RX) (Block 6: Achievements) -->
+            <g class="cursor-pointer" onclick="switchTab('status')">
+              <rect x="70" y="310" width="16" height="22" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+              <circle id="vled-pwr" cx="78" cy="321" r="5" fill="#7f1d1d" class="led-off" />
+              <text x="78" y="342" font-family="'JetBrains Mono'" font-size="6.5" font-weight="bold" fill="#f87171" text-anchor="middle">PWR</text>
+
+              <rect x="100" y="310" width="16" height="22" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+              <circle id="vled-gpio2" cx="108" cy="321" r="5" fill="#164e63" class="led-off" />
+              <text x="108" y="342" font-family="'JetBrains Mono'" font-size="6.5" font-weight="bold" fill="#38bdf8" text-anchor="middle">IO2</text>
+
+              <rect x="205" y="310" width="16" height="22" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+              <circle id="vled-tx" cx="213" cy="321" r="4.5" fill="#78350f" class="led-off" />
+              <text x="213" y="342" font-family="'JetBrains Mono'" font-size="6.5" font-weight="bold" fill="#fbbf24" text-anchor="middle">TX</text>
+
+              <rect x="235" y="310" width="16" height="22" rx="2" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+              <circle id="vled-rx" cx="243" cy="321" r="4.5" fill="#064e3b" class="led-off" />
+              <text x="243" y="342" font-family="'JetBrains Mono'" font-size="6.5" font-weight="bold" fill="#34d399" text-anchor="middle">RX</text>
+            </g>
+
+            <!-- Tactile Buttons -->
+            <g class="cursor-pointer" onclick="rebootBoard(true)">
+              <rect x="65" y="525" width="28" height="28" rx="4" fill="#27272a" stroke="#52525b" stroke-width="1.5" />
+              <circle cx="79" cy="539" r="8" fill="#e2e8f0" stroke="#71717a" stroke-width="1.5" />
+              <text x="79" y="565" font-family="'JetBrains Mono'" font-size="7.5" font-weight="bold" fill="#cbd5e1" text-anchor="middle">EN (RST)</text>
+            </g>
+
+            <g class="cursor-pointer" onclick="toggleBootButton()">
+              <rect x="225" y="525" width="28" height="28" rx="4" fill="#27272a" stroke="#52525b" stroke-width="1.5" />
+              <circle id="vbtn-boot" cx="239" cy="539" r="8" fill="#e2e8f0" stroke="#71717a" stroke-width="1.5" />
+              <text x="239" y="565" font-family="'JetBrains Mono'" font-size="7.5" font-weight="bold" fill="#cbd5e1" text-anchor="middle">BOOT (IO0)</text>
+            </g>
+
+            <!-- USB-C Receptacle -->
+            <g id="v-usb-port" class="cursor-pointer" onclick="togglePower()">
+              <rect x="125" y="575" width="70" height="42" rx="6" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2" />
+              <rect x="135" y="583" width="50" height="20" rx="4" fill="#05080c" stroke="#334155" stroke-width="1.5" />
+              <rect x="145" y="591" width="30" height="4" rx="1.5" fill="url(#goldPad)" />
+              <text x="160" y="612" font-family="'JetBrains Mono'" font-size="7" font-weight="bold" fill="#0284c7" text-anchor="middle">TYPE-C 5V</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Quick PCB Navigation Shortcuts -->
+        <div class="w-full mt-3 grid grid-cols-3 gap-1 text-[10px] font-mono">
+          <button onclick="switchTab('rf')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-cyan-500 text-slate-300 hover:text-cyan-300 transition text-center truncate">
+            1. RF PROFILE
+          </button>
+          <button onclick="switchTab('projects')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-emerald-500 text-slate-300 hover:text-emerald-300 transition text-center truncate">
+            2. 5 PROJECTS
+          </button>
+          <button onclick="switchTab('cpu')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-blue-500 text-slate-300 hover:text-blue-300 transition text-center truncate">
+            3. 8 SKILLS
+          </button>
+          <button onclick="switchTab('uart')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-amber-500 text-slate-300 hover:text-amber-300 transition text-center truncate">
+            4. RESEARCH
+          </button>
+          <button onclick="switchTab('ldo')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-green-500 text-slate-300 hover:text-green-300 transition text-center truncate">
+            5. EDUCATION
+          </button>
+          <button onclick="switchTab('status')" class="p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-purple-500 text-slate-300 hover:text-purple-300 transition text-center truncate">
+            6. AWARDS
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- RIGHT COL: BLENDED HARDWARE ARCHITECTURE & PROJECT LABS     -->
+      <!-- ============================================================ -->
+      <section class="lg:col-span-8 flex flex-col gap-4">
+        
+        <!-- ========================================================== -->
+        <!-- BLOCK 1: RF ANTENNA & CANDIDATE PROFILE                   -->
+        <!-- ========================================================== -->
+        <div id="tab-rf" class="arch-panel bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700">MEDHA SERVO DRIVES & ECIL HYD APPLICATION</span>
+                <span class="text-xs font-mono text-slate-400">B.Tech ECE (2023–2027) &bull; CGPA: 8.42/10.0</span>
+              </div>
+              <h1 class="text-2xl font-black text-white mt-1">BOLIGORLA VENGABABU</h1>
+              <p class="text-xs font-mono font-bold text-cyan-400 mt-0.5">ELECTRONICS & COMMUNICATION ENGINEERING UNDERGRADUATE</p>
+              <p class="text-xs text-slate-400 font-mono">Embedded Systems | Railway Electronics | Communication Systems | Robotics | AI & Prompt Engineering</p>
+            </div>
+            
+            <div class="flex flex-col items-end gap-1.5 font-mono text-xs">
+              <span class="text-slate-400">Location: <strong class="text-white">Kavali, Andhra Pradesh, India</strong></span>
+              <span class="text-slate-400">Phone: <strong class="text-cyan-300">+91 91218 43829</strong></span>
+              <div class="flex gap-2 mt-1">
+                <a href="mailto:boligorlavengababu@gmail.com" class="px-3 py-1 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-800 text-cyan-300 transition">Email</a>
+                <a href="https://linkedin.com/in/boligorla-vengababu-503729349/" target="_blank" class="px-3 py-1 rounded bg-blue-950 hover:bg-blue-900 border border-blue-800 text-blue-300 transition">LinkedIn</a>
+                <a href="https://github.com/vengababu-X" target="_blank" class="px-3 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 transition">GitHub</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Summary Optimized for Medha & ECIL -->
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+            <h3 class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+              <span>PROFESSIONAL SUMMARY &bull; MEDHA & ECIL FOCUSED</span>
+              <span class="text-[10px] text-emerald-400 font-bold font-mono">RAILWAY TRACTION & DEFENSE ELECTRONICS READY</span>
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed font-sans">
+              Motivated Electronics and Communication Engineering undergraduate (2023–2027) with hands-on experience in embedded systems, microcontroller firmware development, railway technology, robotics, and sensor integration. Proficient in ESP32, ESP8266, Arduino, Embedded C/C++, Python, digital electronics, and hardware-software integration. Actively collaborating with a faculty mentor on communication engineering research and technical manuscript development. Experienced in AI-assisted engineering workflows, prompt engineering, and structured technical problem-solving. Seeking engineering roles at <strong>Medha Servo Drives</strong> and <strong>ECIL Hyderabad</strong> across embedded electronics, communication systems, railway traction and control technologies, and industrial automation.
+            </p>
+          </div>
+
+          <!-- Key Qualifications Matrix for Medha & ECIL -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+            <div class="p-3.5 rounded-xl bg-black/60 border border-emerald-900/60">
+              <span class="text-emerald-400 text-[10px] uppercase font-bold block mb-1">FOR MEDHA SERVO DRIVES (HYDERABAD)</span>
+              <p class="text-slate-300 text-[11px] leading-relaxed">
+                Expertise in <strong>Railway Technology & Rolling Stock Monitoring (ITMS, RAILGUARD-X)</strong>, multi-channel <strong>PWM motor/servo control (PCA9685)</strong>, noise-immune <strong>CAN Bus & RS-485 protocols</strong>, and safety-critical sensor fail-safes.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/60 border border-blue-900/60">
+              <span class="text-cyan-400 text-[10px] uppercase font-bold block mb-1">FOR ECIL HYDERABAD (DEFENSE & STRATEGIC)</span>
+              <p class="text-slate-300 text-[11px] leading-relaxed">
+                Expertise in <strong>Faculty-Guided Communication Systems Research</strong>, bare-metal <strong>Embedded C/C++ firmware</strong>, digital instrumentation, and <strong>VLSI RTL simulation & synthesis (Verilog HDL, Sky130 PDK, OpenLane)</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- BLOCK 2: EXPANSION BUS & ALL 5 ENGINEERING PROJECTS        -->
+        <!-- ========================================================== -->
+        <div id="tab-projects" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700">BLOCK 02 &bull; EXPANSION BUS & 5 ENGINEERING PROJECTS</span>
+              <h2 class="text-xl font-black text-white mt-1">Railway Technology & Industrial Automation Projects</h2>
+            </div>
+            <span class="text-xs font-mono text-emerald-400">PWM &bull; I2C &bull; ROS 2 &bull; ESP-NOW &bull; Sky130</span>
+          </div>
+
+          <!-- 5 Project Selector Tabs -->
+          <div class="flex gap-1.5 overflow-x-auto pb-1 text-xs font-mono">
+            <button onclick="selectProject(1)" id="pnav-1" class="px-3 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-600 font-bold whitespace-nowrap">1. RAILGUARD-X</button>
+            <button onclick="selectProject(2)" id="pnav-2" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap">2. ITMS RAILWAY</button>
+            <button onclick="selectProject(3)" id="pnav-3" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap">3. SMART WEARABLE</button>
+            <button onclick="selectProject(4)" id="pnav-4" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap">4. EYE WHEELCHAIR</button>
+            <button onclick="selectProject(5)" id="pnav-5" class="px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap">5. Y2K COUNTER (VLSI)</button>
+          </div>
+
+          <!-- DYNAMIC PROJECT CARD CONTAINER -->
+          <div id="project-card-container">
+            <!-- Injected by selectProject() -->
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- BLOCK 3: XTENSA LX6 CPU & ALL 8 TECHNICAL SKILL CATEGORIES -->
+        <!-- ========================================================== -->
+        <div id="tab-cpu" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-blue-950 text-blue-300 border border-blue-700">BLOCK 03 &bull; XTENSA LX6 CPU & SKILL DOMAINS</span>
+              <h2 class="text-xl font-black text-white mt-1">All 8 Technical Skill Categories</h2>
+            </div>
+            <span class="text-xs font-mono text-cyan-400">240 MHz Dual-Core &bull; Harvard Architecture</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+            
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-cyan-300 text-xs mb-1.5">1. Programming & Software Development</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; Embedded C, C++, Python, HTML</li>
+                <li>&bull; Data Structures, Problem-Solving & Bare-Metal Firmware Logic</li>
+                <li>&bull; AI-Assisted Coding, Debugging & Technical Documentation</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-emerald-400 text-xs mb-1.5">2. Embedded Systems & Microcontrollers</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; ESP32, ESP8266, Arduino Uno, NodeMCU</li>
+                <li>&bull; Microcontroller Programming & Interrupt Handling</li>
+                <li>&bull; Hardware-Software Integration & Sensor Interfacing</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-amber-300 text-xs mb-1.5">3. Electronics & Hardware</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; Digital & Analog Electronics</li>
+                <li>&bull; Electronic Prototyping & Circuit Fundamentals</li>
+                <li>&bull; PWM Motor & Servo Control</li>
+                <li>&bull; PCB Design Fundamentals (KiCad / EasyEDA)</li>
+                <li>&bull; Multimeter & Oscilloscope Debugging Basics</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-blue-400 text-xs mb-1.5">4. Communication Technologies</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; UART, I2C, SPI, ESP-NOW</li>
+                <li>&bull; CAN Bus & RS-485 Fundamentals <em>(Railway & Industrial Protocols)</em></li>
+                <li>&bull; Communication Systems & Wireless Communication Concepts</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-purple-400 text-xs mb-1.5">5. Robotics & Automation</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; ROS 2 Fundamentals</li>
+                <li>&bull; PCA9685 16-Channel PWM Servo Controller</li>
+                <li>&bull; Ultrasonic Obstacle Detection & Multi-Servo Gait Control</li>
+                <li>&bull; Computer Vision (OpenCV / MediaPipe) & Motor Drive Control</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-rose-400 text-xs mb-1.5">6. VLSI & Digital Design</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; Verilog HDL & RTL Design Concepts</li>
+                <li>&bull; Digital Logic Simulation & Verification</li>
+                <li>&bull; Sky130 PDK & OpenLane ASIC Flow</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-teal-300 text-xs mb-1.5">7. AI & Prompt Engineering</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; Structured Prompt Design & Context Management</li>
+                <li>&bull; LLM Interaction & AI-Assisted Engineering Workflows</li>
+                <li>&bull; Workflow Automation Concepts (n8n Fundamentals)</li>
+              </ul>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <h3 class="font-mono font-bold text-indigo-400 text-xs mb-1.5">8. Development Tools</h3>
+              <ul class="text-slate-300 space-y-1 text-[11px]">
+                <li>&bull; Arduino IDE, Visual Studio Code</li>
+                <li>&bull; Git and GitHub</li>
+                <li>&bull; Supabase</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- BLOCK 4: CP2102 BRIDGE & RESEARCH COLLABORATION            -->
+        <!-- ========================================================== -->
+        <div id="tab-uart" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-amber-950 text-amber-300 border border-amber-700">BLOCK 04 &bull; CP2102 USB-UART BRIDGE & RESEARCH</span>
+              <h2 class="text-xl font-black text-white mt-1">Research Experience & Communication Protocols</h2>
+            </div>
+            <span class="text-xs font-mono text-amber-400">115200 Baud &bull; Asynchronous Serial</span>
+          </div>
+
+          <!-- Full Research Text -->
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-amber-900/60">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white font-mono">Undergraduate Research Collaboration – Communication Systems</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950 text-amber-300 border border-amber-700 font-bold">MANUSCRIPT IN PREPARATION</span>
+            </div>
+            <p class="text-xs font-mono text-cyan-400 mt-0.5">Faculty-Guided Research | PBRVITS</p>
+            
+            <ul class="mt-3 space-y-1.5 text-xs text-slate-300">
+              <li>&bull; Collaborating with a faculty mentor on technical research in the communication and signal processing domain.</li>
+              <li>&bull; Conducting technical literature reviews, system analysis, and performance evaluations.</li>
+              <li>&bull; Authoring technical documentation and preparing a research manuscript for publication.</li>
+            </ul>
+          </div>
+
+          <!-- Communication & Railway Protocols Breakdown -->
+          <div class="p-4 rounded-xl bg-black/80 border border-slate-800">
+            <h3 class="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider mb-2">Protocol Architecture Highlights (Railway & Industrial)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                <strong class="text-slate-200">UART, I2C, SPI:</strong>
+                <p class="text-slate-400 text-[11px] mt-0.5">Bare-metal peripheral communication, high-speed telemetry, and sensor array bus.</p>
+              </div>
+              <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                <strong class="text-slate-200">ESP-NOW Protocol:</strong>
+                <p class="text-slate-400 text-[11px] mt-0.5">Connectionless 2.4GHz peer-to-peer transmission with sub-10ms packet delivery.</p>
+              </div>
+              <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                <strong class="text-slate-200">CAN Bus & RS-485:</strong>
+                <p class="text-slate-400 text-[11px] mt-0.5">Differential noise-immune railway rolling stock & industrial automation standards.</p>
+              </div>
+              <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                <strong class="text-slate-200">Wireless Concepts:</strong>
+                <p class="text-slate-400 text-[11px] mt-0.5">RF modulation, packet framing, CRC error detection, and low-power telemetry.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- BLOCK 5: AMS1117 LDO, EDUCATION & TECHNICAL INTERESTS      -->
+        <!-- ========================================================== -->
+        <div id="tab-ldo" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-green-950 text-green-300 border border-green-700">BLOCK 05 &bull; AMS1117-3.3 POWER & EDUCATION</span>
+              <h2 class="text-xl font-black text-white mt-1">Education & Technical Areas of Interest</h2>
+            </div>
+            <span class="text-xs font-mono text-emerald-400">5.0V USB &rarr; 3.3V DC (800mA LDO)</span>
+          </div>
+
+          <!-- Full Education Section (With Actual CGPA: 8.42/10.0) -->
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+            <span class="text-[10px] font-mono font-bold uppercase text-emerald-400">FORMAL ENGINEERING EDUCATION</span>
+            <h3 class="text-base font-bold text-white mt-1">Bachelor of Technology (B.Tech) – Electronics and Communication Engineering</h3>
+            <p class="text-xs text-slate-300">PBR Visvodaya Institute of Technology & Science (PBRVITS)</p>
+            <p class="text-xs text-slate-400">Kavali, Andhra Pradesh</p>
+            <p class="text-xs font-mono text-cyan-400 mt-1">2023 – 2027 | CGPA: 8.42 / 10.0 (First Class with Distinction) &bull; <em class="text-emerald-400 font-bold">No Active Backlogs</em></p>
+          </div>
+
+          <!-- All 7 Technical Areas of Interest -->
+          <div class="p-4 rounded-xl bg-black/80 border border-slate-800">
+            <h3 class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider mb-2">Technical Areas of Interest (7 Focus Domains)</h3>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5">&bull; Embedded Systems and Microcontroller Applications</li>
+              <li class="flex items-center gap-1.5">&bull; Railway Electronics, Traction Control and Train Monitoring Systems</li>
+              <li class="flex items-center gap-1.5">&bull; Communication Systems and Wireless Technologies</li>
+              <li class="flex items-center gap-1.5">&bull; Industrial Automation and Control Systems</li>
+              <li class="flex items-center gap-1.5">&bull; Robotics and Intelligent Monitoring</li>
+              <li class="flex items-center gap-1.5">&bull; Digital Electronics and VLSI Design</li>
+              <li class="flex items-center gap-1.5">&bull; Artificial Intelligence and Engineering Applications</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- BLOCK 6: STATUS LEDS & ACHIEVEMENTS & LEADERSHIP           -->
+        <!-- ========================================================== -->
+        <div id="tab-status" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-purple-950 text-purple-300 border border-purple-700">BLOCK 06 &bull; STATUS LEDS & HONORS</span>
+              <h2 class="text-xl font-black text-white mt-1">Achievements & Campus Leadership</h2>
+            </div>
+            <span class="text-xs font-mono text-purple-400">PWR &bull; GPIO2 &bull; TX &bull; RX &bull; EN &bull; BOOT</span>
+          </div>
+
+          <!-- All 5 Achievements & Leadership Points -->
+          <div class="space-y-3">
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
+              <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-bold font-mono text-xs flex items-center justify-center shrink-0">1</span>
+              <div>
+                <h4 class="text-xs font-bold text-white">National Finalist – MY Bharat Budget Quest 2026 National Dialogue.</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Selected nationally for governance, public finance policy, and technical innovation dialogues.</p>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
+              <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 font-bold font-mono text-xs flex items-center justify-center shrink-0">2</span>
+              <div>
+                <h4 class="text-xs font-bold text-white">Second Prize – World Student Pitch 2025 India Edition – StreetR startup concept.</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Awarded 2nd Prize for the StreetR startup concept engineered for smart urban safety and mobility.</p>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
+              <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 font-bold font-mono text-xs flex items-center justify-center shrink-0">3</span>
+              <div>
+                <h4 class="text-xs font-bold text-white">Google Student Ambassador</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Technology awareness and campus developer engagement.</p>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold font-mono text-xs flex items-center justify-center shrink-0">4</span>
+              <div>
+                <h4 class="text-xs font-bold text-white">GeeksforGeeks Student Ambassador</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Technical community and coding event leadership.</p>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-3">
+              <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold font-mono text-xs flex items-center justify-center shrink-0">5</span>
+              <div>
+                <h4 class="text-xs font-bold text-white">Unstop Student Ambassador</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Student community and hackathon engagement.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- TAB 7: FIRMWARE IDE & BUS AUDIT RUNNER                     -->
+        <!-- ========================================================== -->
+        <div id="tab-ide" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-700">FIRMWARE RUNNER</span>
+              <h2 class="text-xl font-black text-white mt-1">ESP32 Firmware IDE & Bus Security Sandbox</h2>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <label for="sketch-select" class="text-xs font-mono text-slate-400">SKETCH:</label>
+              <select id="sketch-select" onchange="loadEditorSketch()" class="bg-black/90 border border-slate-700 text-cyan-300 text-xs font-mono rounded-lg px-2.5 py-1">
+                <option value="railguard">01_railguard_servo_scan.cpp</option>
+                <option value="security">02_espnow_packet_sniffer_audit.ino</option>
+                <option value="wheelchair">03_wheelchair_safety_interlock.cpp</option>
+                <option value="verilog">04_y2k_11bit_counter_sim.v</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-black border border-slate-800 overflow-hidden font-mono text-xs">
+            <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] text-slate-400 flex justify-between">
+              <span id="code-editor-title">01_railguard_servo_scan.cpp</span>
+              <span class="text-emerald-400">xtensa-esp32-elf-g++ &bull; FreeRTOS</span>
+            </div>
+            <pre class="p-3 overflow-x-auto max-h-64 text-slate-300 leading-relaxed"><code id="code-editor-body"></code></pre>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <button onclick="compileAndRunCode()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-950">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+              <span>BUILD & RUN ON CORE 1</span>
+            </button>
+            <span id="ide-status-lbl" class="text-xs font-mono text-slate-400">Ready to execute.</span>
+          </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- TAB 8: PLAYFUL MINI-GAMES                                  -->
+        <!-- ========================================================== -->
+        <div id="tab-games" class="arch-panel hidden bg-bench-panel rounded-2xl border border-bench-border p-5 shadow-2xl flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-purple-950 text-purple-300 border border-purple-700">HARDWARE INTERACTION</span>
+              <h2 class="text-xl font-black text-white mt-1">Playful Mini-Games on the Workbench</h2>
+            </div>
+            <div class="flex gap-2 font-mono text-xs">
+              <button onclick="setMiniGame('rhythm')" id="mbtn-rhythm" class="px-2.5 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">GPIO2 RHYTHM</button>
+              <button onclick="setMiniGame('rail')" id="mbtn-rail" class="px-2.5 py-1 rounded bg-slate-900 text-slate-400 border border-slate-800">TRACK DODGE</button>
+            </div>
+          </div>
+
+          <div id="game-rhythm-view" class="flex flex-col items-center">
+            <div class="w-full flex justify-between text-xs font-mono text-slate-400 mb-2">
+              <span>Catch the GPIO2 peak when it enters the target zone!</span>
+              <span>SCORE: <strong id="game-score-lbl" class="text-cyan-300 text-sm">0</strong> | STREAK: <strong id="game-streak-lbl" class="text-emerald-400">0</strong></span>
+            </div>
+            <div class="w-full h-44 bg-black/90 rounded-xl border border-slate-800 relative overflow-hidden flex items-center justify-center">
+              <canvas id="game-canvas" width="600" height="170" class="w-full h-full"></canvas>
+            </div>
+            <button onclick="handleGameTrigger()" class="mt-3 px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-sm font-bold shadow-lg transition active:scale-95">
+              CAPTURE PEAK (SPACEBAR)
+            </button>
+          </div>
+
+          <div id="game-rail-view" class="hidden flex flex-col items-center">
+            <div class="w-full flex justify-between text-xs font-mono text-slate-400 mb-2">
+              <span>Guide RAILGUARD-X across tracks! Avoid obstacles.</span>
+              <span>DISTANCE: <strong id="rail-dist-lbl" class="text-emerald-400">0 m</strong></span>
+            </div>
+            <div class="w-full h-44 bg-slate-950 rounded-xl border border-slate-800 relative overflow-hidden">
+              <canvas id="rail-game-canvas" width="600" height="170" class="w-full h-full"></canvas>
+            </div>
+            <div class="mt-3 flex gap-3 font-mono text-xs">
+              <button onclick="shiftRailRover(-1)" class="px-4 py-2 rounded-lg bg-slate-800 text-cyan-300 font-bold">&larr; LEFT (A)</button>
+              <button onclick="shiftRailRover(1)" class="px-4 py-2 rounded-lg bg-slate-800 text-cyan-300 font-bold">RIGHT (D) &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- LIVE UART0 TERMINAL CONSOLE                                    -->
+    <!-- ============================================================== -->
+    <section class="bg-bench-panel rounded-2xl border border-bench-border shadow-2xl overflow-hidden font-mono text-xs">
+      <div class="px-4 py-2.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <span class="font-bold text-slate-200">ESP32 UART0 SERIAL TERMINAL &bull; 115200 8N1</span>
+        </div>
+        <button onclick="clearTerminal()" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 text-[11px]">
+          CLEAR
+        </button>
+      </div>
+
+      <div id="term-logs" class="p-4 bg-black/95 text-slate-300 font-mono text-xs h-44 overflow-y-auto space-y-1 selection:bg-cyan-500 selection:text-black">
+        <!-- Logs stream here -->
+      </div>
+
+      <form onsubmit="sendTerminalCmd(event)" class="px-4 py-2 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+        <span class="text-emerald-400 font-bold select-none">esp32&gt;</span>
+        <input id="term-input" type="text" placeholder="Type commands: 'projects', 'skills', 'research', 'edu', 'awards', 'contact', 'reboot'..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-600 focus:outline-none font-mono text-xs">
+        <button type="submit" class="px-3 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-xs">SEND</button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- FULL RESUME / DATASHEET MODAL (PRINT & PDF READY)              -->
+  <!-- ============================================================== -->
+  <div id="resume-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md overflow-y-auto p-4 sm:p-8 hidden">
+    <div class="max-w-4xl mx-auto bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-10 text-slate-200 relative">
+      
+      <div class="flex items-center justify-between pb-6 border-b border-slate-700 mb-6 no-print">
+        <div>
+          <span class="px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700">
+            OFFICIAL APPLICATION DATASHEET & RESUME
+          </span>
+          <span class="text-xs text-slate-400 font-mono ml-2">TARGET: MEDHA SERVO DRIVES &bull; ECIL HYDERABAD</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="Boligorla_Vengababu_Resume.docx" download="Boligorla_Vengababu_Resume.docx" class="px-3.5 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>DOWNLOAD WORD (.DOCX)</span>
+          </a>
+          <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
+            PRINT / SAVE PDF
+          </button>
+          <button onclick="closeResumeModal()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs transition">
+            CLOSE &times;
+          </button>
+        </div>
+      </div>
+
+      <!-- Complete Printable Resume Content: 100% Filled, Exact Words, Medha + ECIL Optimized -->
+      <div class="space-y-6 font-sans text-xs">
+        
+        <div class="border-b border-slate-700 pb-5 print-border-b">
+          <h1 class="text-3xl font-extrabold text-white print-header-color tracking-tight">BOLIGORLA VENGABABU</h1>
+          <p class="text-cyan-400 font-mono font-semibold text-sm mt-1 print-header-color">
+            ELECTRONICS & COMMUNICATION ENGINEERING UNDERGRADUATE
+          </p>
+          <p class="text-slate-400 text-xs font-mono mt-0.5">
+            Embedded Systems | Railway Electronics | Communication Systems | Robotics | AI & Prompt Engineering
+          </p>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-slate-300 mt-2">
+            <span>Location: <strong>Kavali, Andhra Pradesh, India</strong></span>
+            <span>&bull;</span>
+            <span>Phone: <strong>+91 91218 43829</strong></span>
+            <span>&bull;</span>
+            <a href="mailto:boligorlavengababu@gmail.com" class="text-cyan-400 hover:underline">boligorlavengababu@gmail.com</a>
+            <span>&bull;</span>
+            <a href="https://linkedin.com/in/boligorla-vengababu-503729349/" target="_blank" class="text-cyan-400 hover:underline">LinkedIn Profile</a>
+            <span>&bull;</span>
+            <a href="https://github.com/vengababu-X" target="_blank" class="text-cyan-400 hover:underline">GitHub: vengababu-X</a>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">PROFESSIONAL SUMMARY</h2>
+          <p class="text-slate-300 leading-relaxed font-sans">
+            Motivated Electronics and Communication Engineering undergraduate (2023–2027) with hands-on experience in embedded systems, microcontroller firmware development, railway technology, robotics, and sensor integration. Proficient in ESP32, ESP8266, Arduino, Embedded C/C++, Python, digital electronics, and hardware-software integration. Actively collaborating with a faculty mentor on communication engineering research and technical manuscript development. Experienced in AI-assisted engineering workflows, prompt engineering, and structured technical problem-solving. Seeking opportunities in embedded electronics, communication systems, railway control technologies, and industrial automation.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">EDUCATION</h2>
+          <p class="font-bold text-white text-sm font-sans">Bachelor of Technology (B.Tech) – Electronics and Communication Engineering</p>
+          <p class="text-slate-300">PBR Visvodaya Institute of Technology & Science (PBRVITS)</p>
+          <p class="text-slate-400">Kavali, Andhra Pradesh</p>
+          <p class="text-cyan-400 font-mono text-[11px] mt-0.5 print-header-color font-semibold">2023 – 2027 | CGPA: 8.42 / 10.0 (First Class with Distinction) <em>(No Active Backlogs)</em></p>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">TECHNICAL SKILLS</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <strong class="text-white font-mono">1. Programming & Software Development</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>Embedded C, C++, Python, HTML</li>
+                <li>Data Structures, Problem-Solving & Bare-Metal Firmware Logic</li>
+                <li>AI-Assisted Coding, Debugging & Technical Documentation</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">2. Embedded Systems & Microcontrollers</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>ESP32, ESP8266, Arduino Uno, NodeMCU</li>
+                <li>Microcontroller Programming & Interrupt Handling</li>
+                <li>Hardware-Software Integration & Sensor Interfacing</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">3. Electronics & Hardware</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>Digital & Analog Electronics</li>
+                <li>Electronic Prototyping & Circuit Fundamentals</li>
+                <li>PWM Motor & Servo Control</li>
+                <li>PCB Design Fundamentals (KiCad / EasyEDA)</li>
+                <li>Multimeter & Oscilloscope Debugging Basics</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">4. Communication Technologies</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>UART, I2C, SPI, ESP-NOW</li>
+                <li>CAN Bus & RS-485 Fundamentals <em>(Railway & Industrial Protocols)</em></li>
+                <li>Communication Systems & Wireless Communication Concepts</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">5. Robotics & Automation</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>ROS 2 Fundamentals</li>
+                <li>PCA9685 16-Channel PWM Servo Controller</li>
+                <li>Ultrasonic Obstacle Detection & Multi-Servo Gait Control</li>
+                <li>Computer Vision (OpenCV / MediaPipe) & Motor Drive Control</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">6. VLSI & Digital Design</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>Verilog HDL & RTL Design Concepts</li>
+                <li>Digital Logic Simulation & Verification</li>
+                <li>Sky130 PDK & OpenLane ASIC Flow</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">7. AI & Prompt Engineering</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>Structured Prompt Design & Context Management</li>
+                <li>LLM Interaction & AI-Assisted Engineering Workflows</li>
+                <li>Workflow Automation Concepts (n8n Fundamentals)</li>
+              </ul>
+            </div>
+            <div>
+              <strong class="text-white font-mono">8. Development Tools</strong>
+              <ul class="text-slate-400 list-disc list-inside mt-0.5">
+                <li>Arduino IDE, Visual Studio Code</li>
+                <li>Git and GitHub</li>
+                <li>Supabase</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">RESEARCH EXPERIENCE</h2>
+          <p class="font-bold text-white font-mono">Undergraduate Research Collaboration – Communication Systems</p>
+          <p class="text-slate-400 italic">Faculty-Guided Research | PBRVITS</p>
+          <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+            <li>Collaborating with a faculty mentor on technical research in the communication and signal processing domain.</li>
+            <li>Conducting technical literature reviews, system analysis, and performance evaluations.</li>
+            <li>Authoring technical documentation and preparing a research manuscript for publication.</li>
+          </ul>
+          <p class="text-emerald-400 font-mono mt-1 font-semibold print-header-color">Research Status: Manuscript in Preparation.</p>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">ENGINEERING PROJECTS</h2>
+          <div class="space-y-3">
+            <div>
+              <h3 class="font-bold text-white text-sm font-mono">1. RAILGUARD-X – Railway Security Robotics System</h3>
+              <p class="text-cyan-400 text-[11px] font-mono italic print-header-color">Railway Technology | Robotics | Embedded Systems</p>
+              <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+                <li>Engineered a quadruped robotic prototype designed for railway track surveillance and perimeter security.</li>
+                <li>Interfaced ESP8266 with a PCA9685 16-channel PWM servo driver over I2C for synchronized multi-servo actuation.</li>
+                <li>Integrated ultrasonic sensors for real-time obstacle detection and avoidance.</li>
+                <li>Designed a modular architecture utilizing ROS 2 fundamentals for robotic communication and control.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm font-mono">2. ITMS – Intelligent Train Monitoring System</h3>
+              <p class="text-cyan-400 text-[11px] font-mono italic print-header-color">Railway Technology | Monitoring Systems | Engineering Innovation</p>
+              <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+                <li>Designed an intelligent railway monitoring concept focused on improving rolling-stock safety and operational awareness.</li>
+                <li>Evaluated embedded sensor integration, fault-alert logic, and telemetry workflows for railway infrastructure.</li>
+                <li>Applied industrial automation and electronics principles to enhance real-time train condition monitoring.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm font-mono">3. Smart Wearable Safety Monitoring System</h3>
+              <p class="text-cyan-400 text-[11px] font-mono italic print-header-color">IoT | Embedded Electronics | Sensor Integration</p>
+              <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+                <li>Developed an ESP32-based wearable safety prototype integrating environmental, motion, and physiological sensor modules.</li>
+                <li>Implemented low-latency ESP-NOW peer-to-peer wireless communication between ESP32 and ESP8266 hardware units.</li>
+                <li>Designed automated alert mechanisms and connected cloud telemetry logging using Supabase.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm font-mono">4. Eye-Controlled Smart Wheelchair System</h3>
+              <p class="text-cyan-400 text-[11px] font-mono italic print-header-color">Assistive Robotics | Embedded Systems | Computer Vision & IR Sensing</p>
+              <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+                <li>Engineered a hands-free eye-controlled wheelchair system integrating dual sensing modes: IR eye-blink detection and camera-based eye-gaze/blink tracking (Python, OpenCV/MediaPipe) for directional navigation.</li>
+                <li>Implemented real-time blink-duration thresholding and gaze classification to translate intentional eye closures and directional looks into Forward, Left, Right, and Stop commands.</li>
+                <li>Interfaced ESP32/Arduino with dual DC motor drivers using PWM speed control and differential steering logic for smooth, jerk-free wheelchair motion.</li>
+                <li>Integrated ultrasonic sensors for automated obstacle detection and emergency braking safety interlocks to prevent collisions regardless of user input.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm font-mono">5. Y2K Counter – VLSI Digital Design</h3>
+              <p class="text-cyan-400 text-[11px] font-mono italic print-header-color">Digital Electronics | Verilog HDL | RTL Design</p>
+              <ul class="list-disc list-inside text-slate-300 mt-1 space-y-0.5">
+                <li>Designed and simulated an 11-bit synchronous digital counter using Verilog HDL.</li>
+                <li>Verified RTL logic behavior, timing transitions, and digital circuit fundamentals.</li>
+                <li>Executed open-source ASIC synthesis and physical design exploration using Sky130 PDK and OpenLane.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">ACHIEVEMENTS & LEADERSHIP</h2>
+          <ul class="list-disc list-inside text-slate-300 space-y-1">
+            <li><strong>National Finalist – MY Bharat Budget Quest 2026 National Dialogue.</strong></li>
+            <li><strong>Second Prize – World Student Pitch 2025 India Edition</strong> – StreetR startup concept.</li>
+            <li><strong>Google Student Ambassador</strong> – Technology awareness and campus developer engagement.</li>
+            <li><strong>GeeksforGeeks Student Ambassador</strong> – Technical community and coding event leadership.</li>
+            <li><strong>Unstop Student Ambassador</strong> – Student community and hackathon engagement.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">TECHNICAL AREAS OF INTEREST</h2>
+          <ul class="list-disc list-inside text-slate-300 grid grid-cols-1 sm:grid-cols-2 gap-1">
+            <li>Embedded Systems and Microcontroller Applications</li>
+            <li>Railway Electronics, Traction Control and Train Monitoring Systems</li>
+            <li>Communication Systems and Wireless Technologies</li>
+            <li>Industrial Automation and Control Systems</li>
+            <li>Robotics and Intelligent Monitoring</li>
+            <li>Digital Electronics and VLSI Design</li>
+            <li>Artificial Intelligence and Engineering Applications</li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-mono font-bold text-amber-400 uppercase tracking-wider mb-2 border-b border-slate-800 pb-1 print-border-b">ADDITIONAL INFORMATION</h2>
+          <p class="text-slate-300"><strong>Languages:</strong> English, Telugu, Hindi and Marathi.</p>
+          <p class="text-slate-400 italic text-[11px] mt-2">
+            <strong>Declaration:</strong> I hereby declare that the information provided above is true and accurate to the best of my knowledge.
+          </p>
+          <p class="text-slate-500 font-mono text-[10px] mt-1">&mdash; Boligorla Vengababu</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT HARDWARE & RESUME DATA ENGINE                       -->
+  <!-- ============================================================== -->
+  <script>
+    const hw = {
+      isPowered: false,
+      audio: true,
+      currentTab: 'rf',
+      currentProject: 1,
+      radarAngle: 0,
+      radarDistance: 142,
+      gaitAngle: 45,
+      wheelchairDir: 'STOPPED',
+      y2kCount: 0,
+      gameScore: 0,
+      gameStreak: 0,
+      rhythmX: 0
+    };
+
+    /* Complete 5 Engineering Projects Data */
+    const projectsList = {
+      1: {
+        title: "1. RAILGUARD-X – Railway Security Robotics System",
+        domain: "Railway Technology | Robotics | Embedded Systems",
+        bullets: [
+          "Engineered a quadruped robotic prototype designed for railway track surveillance and perimeter security.",
+          "Interfaced ESP8266 with a PCA9685 16-channel PWM servo driver over I2C for synchronized multi-servo actuation.",
+          "Integrated ultrasonic sensors for real-time obstacle detection and avoidance.",
+          "Designed a modular architecture utilizing ROS 2 fundamentals for robotic communication and control."
+        ],
+        interactiveType: "radar",
+        hardwareSpec: "ESP8266 &bull; PCA9685 16-Ch I2C (0x40) &bull; 50Hz PWM &bull; ROS 2 &bull; Ultrasonic Array"
+      },
+      2: {
+        title: "2. ITMS – Intelligent Train Monitoring System",
+        domain: "Railway Technology | Monitoring Systems | Engineering Innovation",
+        bullets: [
+          "Designed an intelligent railway monitoring concept focused on improving rolling-stock safety and operational awareness.",
+          "Evaluated embedded sensor integration, fault-alert logic, and telemetry workflows for railway infrastructure.",
+          "Applied industrial automation and electronics principles to enhance real-time train condition monitoring."
+        ],
+        interactiveType: "itms",
+        hardwareSpec: "Bogie Bearing Thermal Probes &bull; Accelerometer Vibration Spectrum &bull; CAN Bus Alert"
+      },
+      3: {
+        title: "3. Smart Wearable Safety Monitoring System",
+        domain: "IoT | Embedded Electronics | Sensor Integration",
+        bullets: [
+          "Developed an ESP32-based wearable safety prototype integrating environmental, motion, and physiological sensor modules.",
+          "Implemented low-latency ESP-NOW peer-to-peer wireless communication between ESP32 and ESP8266 hardware units.",
+          "Designed automated alert mechanisms and connected cloud telemetry logging using Supabase."
+        ],
+        interactiveType: "wearable",
+        hardwareSpec: "ESP32 &bull; MPU6050 3D Gyro &bull; PPG Heart Rate &bull; ESP-NOW &bull; Supabase Database"
+      },
+      4: {
+        title: "4. Eye-Controlled Smart Wheelchair System",
+        domain: "Assistive Robotics | Embedded Systems | Computer Vision & IR Sensing",
+        bullets: [
+          "Engineered a hands-free eye-controlled wheelchair system integrating dual sensing modes: IR eye-blink detection and camera-based eye-gaze/blink tracking (Python, OpenCV/MediaPipe) for directional navigation.",
+          "Implemented real-time blink-duration thresholding and gaze classification to translate intentional eye closures and directional looks into Forward, Left, Right, and Stop commands.",
+          "Interfaced ESP32/Arduino with dual DC motor drivers using PWM speed control and differential steering logic for smooth, jerk-free wheelchair motion.",
+          "Integrated ultrasonic sensors for automated obstacle detection and emergency braking safety interlocks to prevent collisions regardless of user input."
+        ],
+        interactiveType: "wheelchair",
+        hardwareSpec: "OpenCV/MediaPipe Gaze &bull; IR Blink Duration &bull; Dual PWM L298N &bull; <30cm Auto-Brake Relay"
+      },
+      5: {
+        title: "5. Y2K Counter – VLSI Digital Design",
+        domain: "Digital Electronics | Verilog HDL | RTL Design",
+        bullets: [
+          "Designed and simulated an 11-bit synchronous digital counter using Verilog HDL.",
+          "Verified RTL logic behavior, timing transitions, and digital circuit fundamentals.",
+          "Executed open-source ASIC synthesis and physical design exploration using Sky130 PDK and OpenLane."
+        ],
+        interactiveType: "vlsi",
+        hardwareSpec: "11-Bit Synchronous RTL &bull; SkyWater 130nm PDK &bull; OpenLane Synthesis Flow"
+      }
+    };
+
+    /* Web Audio Synthesizer */
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function beep(freq, type = 'sine', duration = 0.08, vol = 0.12) {
+      if (!hw.audio) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function toggleAudio() {
+      hw.audio = !hw.audio;
+      document.getElementById('lbl-audio').innerText = hw.audio ? "SFX: ON" : "SFX: OFF";
+      beep(500, 'sine', 0.04, 0.1);
+    }
+
+    /* Switch Blended Tabs */
+    function switchTab(tabKey) {
+      hw.currentTab = tabKey;
+      beep(480, 'sine', 0.03, 0.1);
+
+      const tabs = ['rf', 'projects', 'cpu', 'uart', 'ldo', 'status', 'ide', 'games'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (panel && btn) {
+          if (t === tabKey) {
+            panel.classList.remove('hidden');
+            btn.className = "arch-tab-btn px-3 py-1.5 rounded-lg font-bold bg-cyan-950 text-cyan-300 border border-cyan-600 flex items-center gap-1.5 whitespace-nowrap shadow-md";
+          } else {
+            panel.classList.add('hidden');
+            btn.className = "arch-tab-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800 flex items-center gap-1.5 whitespace-nowrap";
+          }
+        }
+      });
+
+      if (tabKey === 'projects') selectProject(hw.currentProject || 1);
+      if (tabKey === 'ide') loadEditorSketch();
+      if (tabKey === 'games') initRhythmGame();
+
+      logTerminal(`[SUBSYSTEM] Inspected: ${tabKey.toUpperCase()}`);
+    }
+
+    /* Project Renderer */
+    function selectProject(pid) {
+      hw.currentProject = pid;
+      beep(520, 'sine', 0.03, 0.1);
+
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`pnav-${i}`);
+        if (btn) {
+          if (i === pid) {
+            btn.className = "px-3 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-600 font-bold whitespace-nowrap";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap";
+          }
+        }
+      }
+
+      const p = projectsList[pid];
+      const container = document.getElementById('project-card-container');
+      if (!container || !p) return;
+
+      let labHTML = '';
+
+      if (pid === 1) {
+        // RAILGUARD-X Radar & Gait
+        labHTML = `
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 rounded-xl bg-black/90 border border-slate-800 flex flex-col">
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-2">
+                <span class="text-emerald-400 font-bold">180&deg; ULTRASONIC SWEEP RADAR</span>
+                <span>RANGE: <strong id="radar-dist-txt" class="text-cyan-300">142 cm</strong></span>
+              </div>
+              <div class="w-full h-40 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center">
+                <canvas id="radar-canvas" width="300" height="160" class="w-full h-full"></canvas>
+              </div>
+              <div class="mt-2 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                <span>PINS: Trigger D12, Echo D14</span>
+                <span id="radar-status-badge" class="text-emerald-400 font-bold">TRACK CLEAR</span>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-black/90 border border-slate-800 flex flex-col justify-between font-mono text-xs">
+              <div>
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                  <span class="text-cyan-300 font-bold">PCA9685 16-CH SERVO GAIT CONTROL</span>
+                  <span>I2C: <strong class="text-slate-200">0x40</strong></span>
+                </div>
+                
+                <div class="space-y-2 py-1 text-[11px]">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-400">FRONT-LEFT GAIT:</span>
+                    <span class="text-emerald-400 font-bold" id="gait-fl">Coxa: 45&deg; | Femur: 65&deg;</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="bar-gait-fl" class="bg-emerald-400 h-full w-3/5 transition-all"></div>
+                  </div>
+
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-400">FRONT-RIGHT GAIT:</span>
+                    <span class="text-cyan-400 font-bold" id="gait-fr">Coxa: 45&deg; | Femur: 65&deg;</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="bar-gait-fr" class="bg-cyan-400 h-full w-3/5 transition-all"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-slate-800 flex items-center gap-2">
+                <button onclick="triggerGaitStep()" class="flex-1 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+                  STEP GAIT CYCLE
+                </button>
+                <button onclick="simulateTrackObstacle()" class="px-3 py-1.5 rounded bg-red-950 hover:bg-red-900 border border-red-700 text-red-300 font-bold text-xs transition">
+                  SIMULATE OBSTACLE
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (pid === 2) {
+        // ITMS Railway
+        labHTML = `
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <span class="text-amber-400 font-bold">1. AXLE BEARING TEMPERATURE</span>
+                <span id="itms-temp-val" class="text-base font-bold text-slate-200">64.2 &deg;C</span>
+              </div>
+              <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                <div id="itms-temp-bar" class="bg-amber-400 h-full w-[55%] transition-all"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400">
+                <span>NORMAL: &lt; 75&deg;C</span>
+                <span id="itms-temp-status" class="text-emerald-400 font-bold">THERMAL STATUS: NOMINAL</span>
+              </div>
+              <button onclick="simulateHotBox()" class="mt-2 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs">
+                SIMULATE HOT-BOX BEARING WARNING (&gt;85&deg;C)
+              </button>
+            </div>
+
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-400 font-bold">2. BOGIE VIBRATION SPECTRUM</span>
+                <span id="itms-vib-val" class="text-base font-bold text-slate-200">1.82 g</span>
+              </div>
+              <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                <div id="itms-vib-bar" class="bg-cyan-400 h-full w-[35%] transition-all"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400">
+                <span>THRESHOLD: 3.50 g</span>
+                <span id="itms-vib-status" class="text-emerald-400 font-bold">TRACK SMOOTH</span>
+              </div>
+              <button onclick="simulateDerailmentVibe()" class="mt-2 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs">
+                SIMULATE TRACK FAULT VIBRATION (&gt;4.0g)
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (pid === 3) {
+        // Smart Wearable
+        labHTML = `
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col items-center">
+              <span class="text-slate-400 text-[11px] font-bold mb-2">MPU6050 3D GYRO ORIENTATION</span>
+              <div class="w-32 h-32 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center relative my-2 shadow-inner">
+                <div id="gyro-cube" class="w-20 h-20 rounded-lg bg-gradient-to-tr from-cyan-600 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-lg transition-transform duration-200">
+                  ESP32 IoT
+                </div>
+              </div>
+              <div class="w-full flex justify-around text-[10px] text-slate-400 mt-2">
+                <span>PITCH: <strong id="val-pitch" class="text-cyan-300">0&deg;</strong></span>
+                <span>ROLL: <strong id="val-roll" class="text-purple-300">0&deg;</strong></span>
+                <span>STATUS: <strong id="val-fall" class="text-emerald-400">NORMAL</strong></span>
+              </div>
+              <div class="mt-3 flex gap-2 w-full">
+                <button onclick="tiltWearable(25, 40)" class="flex-1 py-1 rounded bg-slate-800 text-slate-300 hover:text-white">TILT SENSOR</button>
+                <button onclick="simulateFallEvent()" class="flex-1 py-1 rounded bg-red-950 text-red-300 hover:bg-red-900 border border-red-700 font-bold">TRIGGER FALL</button>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <span class="text-slate-400 text-[11px] font-bold block mb-2">ESP-NOW TELEMETRY & SUPABASE CLOUD</span>
+                <div class="space-y-1.5 text-[11px]">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">HEART RATE (PPG):</span>
+                    <span id="wearable-hr" class="text-rose-400 font-bold">74 BPM</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">BLOOD OXYGEN (SpO2):</span>
+                    <span id="wearable-spo2" class="text-cyan-400 font-bold">98.5%</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">SKIN TEMPERATURE:</span>
+                    <span id="wearable-temp" class="text-amber-400 font-bold">36.6 &deg;C</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 p-2 rounded bg-slate-900 border border-slate-800 text-[10px] text-emerald-400 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Supabase PostgreSQL DB: SYNCED (Lat: 6ms)</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (pid === 4) {
+        // Wheelchair
+        labHTML = `
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col items-center">
+              <span class="text-slate-400 text-[11px] mb-2 font-bold">DIRECTIONAL EYE-GAZE SIMULATOR</span>
+              <div class="grid grid-cols-3 gap-2 w-full max-w-[220px] my-2">
+                <div></div>
+                <button onclick="setWheelchairDir('FORWARD')" class="p-3 rounded-xl bg-slate-800 hover:bg-cyan-700 text-slate-200 font-bold text-center transition">&uarr; FWD</button>
+                <div></div>
+                <button onclick="setWheelchairDir('LEFT')" class="p-3 rounded-xl bg-slate-800 hover:bg-cyan-700 text-slate-200 font-bold text-center transition">&larr; LFT</button>
+                <button onclick="setWheelchairDir('STOP')" class="p-3 rounded-xl bg-red-900/80 hover:bg-red-800 text-red-200 font-bold text-center transition">STOP</button>
+                <button onclick="setWheelchairDir('RIGHT')" class="p-3 rounded-xl bg-slate-800 hover:bg-cyan-700 text-slate-200 font-bold text-center transition">RGT &rarr;</button>
+              </div>
+              <div class="text-[11px] text-slate-400 mt-2">ACTIVE COMMAND: <strong id="wheelchair-active-cmd" class="text-cyan-400">STOPPED</strong></div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <span class="text-slate-400 text-[11px] font-bold block mb-2">DIFFERENTIAL PWM DRIVE CHANNELS</span>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-[11px]">
+                    <span class="text-slate-400">LEFT MOTOR (GPIO18):</span>
+                    <span id="pwm-left-val" class="text-emerald-400 font-bold">PWM: 0</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="pwm-left-bar" class="bg-emerald-400 h-full w-0 transition-all"></div>
+                  </div>
+
+                  <div class="flex justify-between text-[11px]">
+                    <span class="text-slate-400">RIGHT MOTOR (GPIO19):</span>
+                    <span id="pwm-right-val" class="text-cyan-400 font-bold">PWM: 0</span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="pwm-right-bar" class="bg-cyan-400 h-full w-0 transition-all"></div>
+                  </div>
+                </div>
+              </div>
+              <button onclick="triggerEmergencyBrake()" class="mt-3 py-1.5 rounded bg-red-950 hover:bg-red-900 border border-red-700 text-red-300 font-bold text-xs transition">
+                SIMULATE &lt;30CM EMERGENCY BRAKE INTERLOCK
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (pid === 5) {
+        // Y2K Counter
+        labHTML = `
+          <div class="mt-4 p-4 rounded-xl bg-black/90 border border-slate-800 flex flex-col gap-3 font-mono text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400 font-bold">11-BIT REGISTER OUTPUT [B10..B0]:</span>
+              <span class="text-amber-400 text-sm font-bold">HEX: <span id="y2k-hex">0x000</span> | DEC: <span id="y2k-dec">0</span></span>
+            </div>
+            <div id="y2k-bit-strip" class="grid grid-cols-11 gap-1 py-2"></div>
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+              <div class="flex items-center gap-2">
+                <button onclick="stepY2kClock()" class="px-4 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold transition">
+                  SINGLE CLOCK STEP (CLK &uarr;)
+                </button>
+                <button onclick="resetY2kCounter()" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                  ASYNC RESET (RST_N)
+                </button>
+              </div>
+              <div class="text-[11px] text-slate-400">
+                OVERFLOW FLAG: <strong id="y2k-overflow" class="text-slate-500">0 (LOW)</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col gap-2">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-base font-bold text-white font-mono">${p.title}</h3>
+            <span class="text-xs font-mono text-cyan-400 italic">${p.domain}</span>
+          </div>
+
+          <div class="p-2 rounded bg-slate-900 border border-slate-800 font-mono text-[11px] text-emerald-300">
+            <strong>HARDWARE ARCHITECTURE:</strong> ${p.hardwareSpec}
+          </div>
+
+          <ul class="mt-2 space-y-1.5 text-xs text-slate-300 list-disc list-inside leading-relaxed font-sans">
+            ${p.bullets.map(b => `<li>${b}</li>`).join('')}
+          </ul>
+
+          ${labHTML}
+        </div>
+      `;
+
+      if (pid === 1) initRadarCanvas();
+      if (pid === 5) renderY2kBits();
+    }
+
+    /* Power Logic */
+    function togglePower() {
+      if (hw.isPowered) powerOff();
+      else powerOn();
+    }
+
+    function powerOn() {
+      if (hw.isPowered) return;
+      hw.isPowered = true;
+      beep(180, 'square', 0.05, 0.2);
+      setTimeout(() => beep(880, 'sine', 0.12, 0.15), 150);
+
+      document.getElementById('readout-vbus').innerText = "5.01 V";
+      document.getElementById('readout-vbus').className = "font-bold text-emerald-400 text-sm";
+      document.getElementById('readout-3v3').innerText = "3.30 V";
+      document.getElementById('readout-3v3').className = "font-bold text-cyan-400 text-sm";
+      document.getElementById('readout-current').innerText = "142 mA";
+      document.getElementById('readout-current').className = "font-bold text-amber-300 text-sm";
+      document.getElementById('readout-xtal').innerText = "240 MHz";
+      document.getElementById('readout-xtal').className = "font-bold text-purple-400 text-sm";
+
+      document.getElementById('lbl-power').innerText = "DISCONNECT USB";
+      document.getElementById('plug-text').innerHTML = `<span class="text-emerald-400 font-bold">PLUGGED IN (5.01V) &bull; CLICK TO DISCONNECT</span>`;
+      document.getElementById('plug-led').className = "w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]";
+
+      document.getElementById('vled-pwr').className = "led-red";
+      document.getElementById('vled-gpio2').className = "led-cyan anim-heartbeat";
+      flashTxRxActivity();
+
+      ['tr-5v', 'tr-3v3', 'tr-uart', 'tr-gpio2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('trace-active');
+      });
+
+      streamBootLogs();
+    }
+
+    function powerOff() {
+      hw.isPowered = false;
+      beep(150, 'square', 0.05, 0.2);
+
+      document.getElementById('readout-vbus').innerText = "0.00 V";
+      document.getElementById('readout-vbus').className = "font-bold text-slate-500 text-sm";
+      document.getElementById('readout-3v3').innerText = "0.00 V";
+      document.getElementById('readout-3v3').className = "font-bold text-slate-500 text-sm";
+      document.getElementById('readout-current').innerText = "0 mA";
+      document.getElementById('readout-current').className = "font-bold text-slate-500 text-sm";
+      document.getElementById('readout-xtal').innerText = "OFF";
+      document.getElementById('readout-xtal').className = "font-bold text-slate-500 text-sm";
+
+      document.getElementById('lbl-power').innerText = "PLUG IN USB-C (5V)";
+      document.getElementById('plug-text').innerText = "DRAG / CLICK → PLUG IN USB-C (5V)";
+      document.getElementById('plug-led').className = "w-2 h-2 rounded-full bg-slate-600";
+
+      document.getElementById('vled-pwr').className = "led-off";
+      document.getElementById('vled-gpio2').className = "led-off";
+      document.getElementById('vled-tx').className = "led-off";
+      document.getElementById('vled-rx').className = "led-off";
+
+      ['tr-5v', 'tr-3v3', 'tr-uart', 'tr-gpio2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('trace-active');
+      });
+
+      logTerminal("[POWER] USB-C disconnected. ESP32 powered down (0.00V).");
+    }
+
+    function autoBoot() {
+      if (!hw.isPowered) powerOn();
+      switchTab('rf');
+    }
+
+    function flashTxRxActivity() {
+      const tx = document.getElementById('vled-tx');
+      const rx = document.getElementById('vled-rx');
+      if (tx) tx.className = "led-amber";
+      if (rx) rx.className = "led-green";
+      setTimeout(() => {
+        if (tx) tx.className = "led-off";
+        if (rx) rx.className = "led-off";
+      }, 150);
+    }
+
+    function rebootBoard(hardware = false) {
+      beep(320, 'square', 0.05, 0.2);
+      logTerminal(hardware ? "[RST] Hardware EN Pin pulled LOW." : "[CMD] Software reboot initiated.");
+      document.getElementById('vled-pwr').className = "led-off";
+      document.getElementById('vled-gpio2').className = "led-off";
+      setTimeout(() => {
+        if (hw.isPowered) {
+          document.getElementById('vled-pwr').className = "led-red";
+          document.getElementById('vled-gpio2').className = "led-cyan anim-heartbeat";
+          streamBootLogs();
+        }
+      }, 300);
+    }
+
+    function toggleBootButton() {
+      const btn = document.getElementById('vbtn-boot');
+      beep(400, 'square', 0.04, 0.15);
+      if (btn) {
+        btn.setAttribute('fill', btn.getAttribute('fill') === '#38bdf8' ? '#e2e8f0' : '#38bdf8');
+      }
+      logTerminal("[GPIO0] BOOT button state toggled (Flash Download / Normal Mode).");
+    }
+
+    /* Terminal Functions */
+    function logTerminal(msg) {
+      const logs = document.getElementById('term-logs');
+      if (!logs) return;
+      const d = document.createElement('div');
+      const time = new Date().toISOString().substring(11, 23);
+      d.innerHTML = `<span class="text-slate-600 select-none">[${time}]</span> ${msg}`;
+      logs.appendChild(d);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    function clearTerminal() {
+      const logs = document.getElementById('term-logs');
+      if (logs) logs.innerHTML = '';
+      beep(300, 'sine', 0.03, 0.1);
+    }
+
+    function sendTerminalCmd(e) {
+      e.preventDefault();
+      const input = document.getElementById('term-input');
+      if (!input) return;
+      const cmd = input.value.trim().toLowerCase();
+      if (!cmd) return;
+
+      logTerminal(`<strong class="text-cyan-300">esp32&gt; ${cmd}</strong>`);
+      input.value = '';
+      flashTxRxActivity();
+      beep(450, 'square', 0.03, 0.1);
+
+      if (cmd === 'help') {
+        logTerminal("Available commands: profile, projects, skills, research, edu, awards, contact, reboot, clear");
+      } else if (cmd === 'profile' || cmd === 'rf' || cmd === 'about') {
+        switchTab('rf');
+      } else if (cmd === 'projects') {
+        switchTab('projects');
+      } else if (cmd === 'skills') {
+        switchTab('cpu');
+      } else if (cmd === 'research') {
+        switchTab('uart');
+      } else if (cmd === 'edu' || cmd === 'education') {
+        switchTab('ldo');
+      } else if (cmd === 'awards') {
+        switchTab('status');
+      } else if (cmd === 'contact') {
+        logTerminal("Contact: boligorlavengababu@gmail.com | Phone: +91 91218 43829 | Kavali, AP, India");
+      } else if (cmd === 'reboot') {
+        rebootBoard();
+      } else if (cmd === 'clear') {
+        clearTerminal();
+      } else {
+        logTerminal(`Command '${cmd}' executed. Switched view.`);
+      }
+    }
+
+    function streamBootLogs() {
+      const lines = [
+        "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+        "I (31) boot: ESP-IDF v4.4-dev &bull; Chip Revision: 3 &bull; VRef: 1100mV",
+        "I (38) boot.esp32: PRO CPU up, active at 240 MHz (Dual-Core)",
+        "I (42) boot.esp32: APP CPU up, FreeRTOS scheduler online",
+        "============================================================",
+        "  BOLIGORLA VENGABABU &bull; ESP32-WROOM-32 HARDWARE PORTFOLIO",
+        "  TARGET: MEDHA SERVO DRIVES &bull; ECIL HYDERABAD",
+        "  5 Engineering Projects Loaded &bull; CAN, RS-485, PWM, ROS 2",
+        "============================================================"
+      ];
+      lines.forEach((l, i) => {
+        setTimeout(() => {
+          logTerminal(l);
+          if (i % 2 === 0) beep(600 + i * 40, 'sine', 0.02, 0.05);
+        }, i * 50);
+      });
+    }
+
+    /* Radar Simulation */
+    let radarAnim = null;
+    function initRadarCanvas() {
+      const c = document.getElementById('radar-canvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      if (radarAnim) cancelAnimationFrame(radarAnim);
+
+      function loop() {
+        ctx.fillStyle = "#05090e";
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        ctx.strokeStyle = "#1e3a2b";
+        ctx.lineWidth = 1;
+        const cx = c.width / 2;
+        const cy = c.height - 15;
+        [35, 70, 105, 140].forEach(r => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, Math.PI, 0);
+          ctx.stroke();
+        });
+
+        hw.radarAngle += 0.04;
+        const sweepAngle = Math.PI + (Math.sin(hw.radarAngle) + 1) * (Math.PI / 2);
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(sweepAngle) * 140, cy + Math.sin(sweepAngle) * 140);
+        ctx.stroke();
+
+        if (hw.radarDistance < 100) {
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath();
+          ctx.arc(cx + 35, cy - 55, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        radarAnim = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function triggerGaitStep() {
+      hw.gaitAngle = (hw.gaitAngle === 45) ? 75 : 45;
+      beep(620, 'triangle', 0.04, 0.12);
+      const fl = document.getElementById('gait-fl');
+      const fr = document.getElementById('gait-fr');
+      if (fl) fl.innerHTML = `Coxa: ${hw.gaitAngle}&deg; | Femur: ${110 - hw.gaitAngle}&deg;`;
+      if (fr) fr.innerHTML = `Coxa: ${hw.gaitAngle}&deg; | Femur: ${110 - hw.gaitAngle}&deg;`;
+      const bfl = document.getElementById('bar-gait-fl');
+      const bfr = document.getElementById('bar-gait-fr');
+      if (bfl) bfl.style.width = (hw.gaitAngle * 1.2) + "%";
+      if (bfr) bfr.style.width = (hw.gaitAngle * 1.2) + "%";
+      logTerminal(`[GAIT] PCA9685 PWM Step Triggered. FL/FR Servos = ${hw.gaitAngle}&deg;`);
+    }
+
+    function simulateTrackObstacle() {
+      hw.radarDistance = 18;
+      const rtxt = document.getElementById('radar-dist-txt');
+      const rstat = document.getElementById('radar-status-badge');
+      if (rtxt) { rtxt.innerText = "18 cm (DANGER!)"; rtxt.className = "text-red-400 font-bold"; }
+      if (rstat) { rstat.innerText = "TRACK OBSTACLE DETECTED! HALTED."; rstat.className = "text-red-400 font-bold"; }
+      beep(200, 'sawtooth', 0.25, 0.3);
+      logTerminal("[ALERT] Ultrasonic sensor detected obstacle at 18 cm! Quadruped halted.");
+      setTimeout(() => {
+        hw.radarDistance = 142;
+        if (rtxt) { rtxt.innerText = "142 cm"; rtxt.className = "text-cyan-300 font-bold"; }
+        if (rstat) { rstat.innerText = "TRACK CLEAR"; rstat.className = "text-emerald-400 font-bold"; }
+      }, 4000);
+    }
+
+    /* ITMS Simulator */
+    function simulateHotBox() {
+      beep(180, 'sawtooth', 0.3, 0.25);
+      const val = document.getElementById('itms-temp-val');
+      const bar = document.getElementById('itms-temp-bar');
+      const stat = document.getElementById('itms-temp-status');
+      if (val) val.innerText = "92.4 °C (OVERHEAT)";
+      if (bar) { bar.style.width = "92%"; bar.className = "bg-red-500 h-full transition-all"; }
+      if (stat) { stat.innerText = "CRITICAL: HOT-BOX BEARING FAULT!"; stat.className = "text-red-400 font-bold"; }
+      logTerminal("[ITMS FAULT] Bogie Bearing Temp = 92.4°C. Dispatching emergency CAN bus warning!");
+    }
+
+    function simulateDerailmentVibe() {
+      beep(160, 'sawtooth', 0.3, 0.25);
+      const val = document.getElementById('itms-vib-val');
+      const bar = document.getElementById('itms-vib-bar');
+      const stat = document.getElementById('itms-vib-status');
+      if (val) val.innerText = "4.65 g (SEVERE)";
+      if (bar) { bar.style.width = "88%"; bar.className = "bg-red-500 h-full transition-all"; }
+      if (stat) { stat.innerText = "ALERT: TRACK DISCONTINUITY"; stat.className = "text-red-400 font-bold"; }
+      logTerminal("[ITMS FAULT] Vibration Spike 4.65g. Warning rolling-stock driver!");
+    }
+
+    /* Wheelchair Simulator */
+    function setWheelchairDir(dir) {
+      hw.wheelchairDir = dir;
+      beep(550, 'sine', 0.04, 0.1);
+      const cmd = document.getElementById('wheelchair-active-cmd');
+      if (cmd) cmd.innerText = dir;
+
+      let lPwm = 0, rPwm = 0;
+      if (dir === 'FORWARD') { lPwm = 180; rPwm = 180; }
+      else if (dir === 'LEFT') { lPwm = 80; rPwm = 180; }
+      else if (dir === 'RIGHT') { lPwm = 180; rPwm = 80; }
+      else { lPwm = 0; rPwm = 0; }
+
+      const pl = document.getElementById('pwm-left-val');
+      const pr = document.getElementById('pwm-right-val');
+      const bl = document.getElementById('pwm-left-bar');
+      const br = document.getElementById('pwm-right-bar');
+      if (pl) pl.innerText = `PWM: ${lPwm}`;
+      if (pr) pr.innerText = `PWM: ${rPwm}`;
+      if (bl) bl.style.width = (lPwm / 2.55) + "%";
+      if (br) br.style.width = (rPwm / 2.55) + "%";
+
+      logTerminal(`[WHEELCHAIR] Eye Gaze Command: ${dir} | Left PWM=${lPwm}, Right PWM=${rPwm}`);
+    }
+
+    function triggerEmergencyBrake() {
+      beep(140, 'square', 0.3, 0.3);
+      setWheelchairDir('STOP');
+      logTerminal("[SAFETY INTERLOCK] Proximity <30cm! Hardware relay engaged: Motors killed.");
+    }
+
+    /* Wearable Simulator */
+    function tiltWearable(p, r) {
+      beep(500, 'sine', 0.03, 0.1);
+      const cube = document.getElementById('gyro-cube');
+      if (cube) cube.style.transform = `rotateX(${p}deg) rotateY(${r}deg)`;
+      const vp = document.getElementById('val-pitch');
+      const vr = document.getElementById('val-roll');
+      if (vp) vp.innerText = `${p}°`;
+      if (vr) vr.innerText = `${r}°`;
+      logTerminal(`[WEARABLE MPU6050] Gyro Pitch=${p}°, Roll=${r}°`);
+    }
+
+    function simulateFallEvent() {
+      beep(180, 'sawtooth', 0.3, 0.25);
+      tiltWearable(80, 85);
+      const vf = document.getElementById('val-fall');
+      if (vf) { vf.innerText = "FALL DETECTED!"; vf.className = "text-red-400 font-bold"; }
+      logTerminal("[ALERT] Wearable MPU6050 sudden acceleration spike! ESP-NOW emergency packet broadcasted.");
+    }
+
+    /* Y2K 11-Bit Counter */
+    function renderY2kBits() {
+      const container = document.getElementById('y2k-bit-strip');
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 10; i >= 0; i--) {
+        const bit = (hw.y2kCount >> i) & 1;
+        const box = document.createElement('div');
+        box.className = `p-2 rounded text-center font-bold text-xs ${bit ? 'bg-amber-500 text-black shadow-[0_0_8px_#f59e0b]' : 'bg-slate-900 text-slate-500 border border-slate-800'}`;
+        box.innerHTML = `<span class="block text-[8px] text-slate-400">B${i}</span>${bit}`;
+        container.appendChild(box);
+      }
+      const h = document.getElementById('y2k-hex');
+      const d = document.getElementById('y2k-dec');
+      const o = document.getElementById('y2k-overflow');
+      if (h) h.innerText = "0x" + hw.y2kCount.toString(16).toUpperCase().padStart(3, '0');
+      if (d) d.innerText = hw.y2kCount;
+      if (o) {
+        o.innerText = (hw.y2kCount >= 0x7FF) ? "1 (OVERFLOW)" : "0 (LOW)";
+        o.className = (hw.y2kCount >= 0x7FF) ? "text-red-400 font-bold" : "text-slate-500";
+      }
+    }
+
+    function stepY2kClock() {
+      hw.y2kCount = (hw.y2kCount + 1) & 0x7FF;
+      beep(700, 'square', 0.03, 0.1);
+      renderY2kBits();
+      logTerminal(`[VERILOG] CLK rising edge. Counter output = 0x${hw.y2kCount.toString(16).toUpperCase()}`);
+    }
+
+    function resetY2kCounter() {
+      hw.y2kCount = 0;
+      beep(300, 'sine', 0.04, 0.1);
+      renderY2kBits();
+      logTerminal("[VERILOG] Async RST_N asserted. Counter register cleared to 0x000.");
+    }
+
+    /* Firmware IDE Code */
+    const ideSketches = {
+      railguard: `// 01_railguard_servo_scan.cpp - Quadruped Railway Surveillance Gait
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+#define TRIG 12
+#define ECHO 14
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(4, 5); // SDA=4, SCL=5
+  pwm.begin();
+  pwm.setPWMFreq(50); // 50Hz Servo Frequency
+  Serial.println("[RAILGUARD-X] PCA9685 16-Channel Controller: ONLINE");
+}
+
+void loop() {
+  // Gait step coordination...
+}`,
+      security: `// 02_espnow_packet_sniffer_audit.ino - Safe Bus & Packet Audit
+#include <esp_now.h>
+#include <WiFi.h>
+
+void onDataRecv(const uint8_t *mac, const uint8_t *data, int len) {
+  Serial.printf("[SEC_AUDIT] Packet Received | Len=%d | MAC: %02X:%02X:%02X...\\n", len, mac[0], mac[1], mac[2]);
+  Serial.println("[SEC_AUDIT] Integrity Status: CRC32 VALID | Encryption: OK");
+}
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  esp_now_init();
+  esp_now_register_recv_cb(onDataRecv);
+}`,
+      wheelchair: `// 03_wheelchair_safety_interlock.cpp - Eye Gaze & Auto-Brake
+#define IR_BLINK_PIN 13
+#define MOTOR_PWM_L  18
+#define MOTOR_PWM_R  19
+
+void setup() {
+  Serial.begin(115200);
+  ledcAttachPin(MOTOR_PWM_L, 0);
+  ledcAttachPin(MOTOR_PWM_R, 1);
+  Serial.println("[ASSISTIVE] Smart Wheelchair Interlock Loaded.");
+}`,
+      verilog: `// 04_y2k_11bit_counter_sim.v - 11-Bit Synchronous Counter
+module y2k_11bit_counter (
+  input  wire        clk,
+  input  wire        rst_n,
+  output reg  [10:0] count,
+  output wire        overflow
+);
+  assign overflow = (count == 11'h7FF);
+  always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) count <= 11'b0;
+    else count <= count + 1'b1;
+  end
+endmodule`
+    };
+
+    function loadEditorSketch() {
+      const dd = document.getElementById('sketch-select');
+      const body = document.getElementById('code-editor-body');
+      const title = document.getElementById('code-editor-title');
+      if (!dd || !body) return;
+      const key = dd.value;
+      if (ideSketches[key]) body.innerText = ideSketches[key];
+      if (title) title.innerText = dd.options[dd.selectedIndex].text;
+    }
+
+    function compileAndRunCode() {
+      if (!hw.isPowered) {
+        alert("Please connect USB-C (5V) to energize the board first!");
+        return;
+      }
+      beep(550, 'triangle', 0.05, 0.1);
+      document.getElementById('ide-status-lbl').innerText = "Compiling with xtensa-esp32-elf-g++...";
+      flashTxRxActivity();
+      setTimeout(() => {
+        document.getElementById('ide-status-lbl').innerHTML = `<span class="text-emerald-400 font-bold">RUNNING ON ESP32 CORE 1</span>`;
+        logTerminal("[FLASH] Sketch uploaded to 0x00010000. Verified 100%. FreeRTOS task spawned.");
+      }, 800);
+    }
+
+    /* Rhythm Game */
+    let rhythmAnim = null;
+    function initRhythmGame() {
+      const c = document.getElementById('game-canvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      if (rhythmAnim) cancelAnimationFrame(rhythmAnim);
+
+      function loop() {
+        ctx.fillStyle = "#05090e";
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(480, 10); ctx.lineTo(480, c.height - 10);
+        ctx.stroke();
+
+        hw.rhythmX = (hw.rhythmX + 4) % c.width;
+
+        ctx.strokeStyle = "#06b6d4";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let x = 0; x < c.width; x += 4) {
+          const d = Math.abs(x - hw.rhythmX);
+          let y = 85;
+          if (d < 40) y = 85 - Math.cos((d / 40) * (Math.PI / 2)) * 60;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        rhythmAnim = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function handleGameTrigger() {
+      const diff = Math.abs(hw.rhythmX - 480);
+      if (diff < 40) {
+        hw.gameScore += 100;
+        hw.gameStreak += 1;
+        beep(880, 'sine', 0.08, 0.2);
+        flashTxRxActivity();
+        logTerminal(`[GAME] PERFECT HIT! Score: ${hw.gameScore} | Streak: ${hw.gameStreak}`);
+      } else {
+        hw.gameStreak = 0;
+        beep(200, 'sawtooth', 0.1, 0.2);
+      }
+      document.getElementById('game-score-lbl').innerText = hw.gameScore;
+      document.getElementById('game-streak-lbl').innerText = hw.gameStreak;
+    }
+
+    function setMiniGame(type) {
+      if (type === 'rhythm') {
+        document.getElementById('game-rhythm-view').classList.remove('hidden');
+        document.getElementById('game-rail-view').classList.add('hidden');
+      } else {
+        document.getElementById('game-rhythm-view').classList.add('hidden');
+        document.getElementById('game-rail-view').classList.remove('hidden');
+      }
+    }
+
+    function shiftRailRover(dir) {
+      beep(500, 'sine', 0.03, 0.1);
+      logTerminal(`[ROVER] Switched railway track lane: ${dir > 0 ? 'RIGHT' : 'LEFT'}`);
+    }
+
+    /* Modal Controls */
+    function openResumeModal() {
+      document.getElementById('resume-modal').classList.remove('hidden');
+      beep(500, 'sine', 0.04, 0.1);
+    }
+
+    function closeResumeModal() {
+      document.getElementById('resume-modal').classList.add('hidden');
+      beep(350, 'sine', 0.04, 0.1);
+    }
+
+    /* Render Pins */
+    function renderVerticalPins() {
+      const lHeader = document.getElementById('v-header-left');
+      const rHeader = document.getElementById('v-header-right');
+      if (!lHeader || !rHeader) return;
+
+      const leftNames = ["3V3", "EN", "VP", "VN", "34", "35", "32", "33", "25", "26", "27", "14", "12", "GND", "13"];
+      const rightNames = ["23", "22", "TX0", "RX0", "21", "GND", "19", "18", "5", "17", "16", "4", "0", "2", "5V"];
+
+      leftNames.forEach((name, i) => {
+        const y = 80 + i * 34;
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", "28");
+        c.setAttribute("cy", y);
+        c.setAttribute("r", "5");
+        c.setAttribute("fill", "url(#goldPad)");
+        c.setAttribute("stroke", "#05080c");
+        c.setAttribute("stroke-width", "1");
+
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", "40");
+        t.setAttribute("y", y + 3);
+        t.setAttribute("font-family", "'JetBrains Mono'");
+        t.setAttribute("font-size", "7");
+        t.setAttribute("fill", "#cbd5e1");
+        t.textContent = name;
+
+        lHeader.appendChild(c);
+        lHeader.appendChild(t);
+      });
+
+      rightNames.forEach((name, i) => {
+        const y = 80 + i * 34;
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", "292");
+        c.setAttribute("cy", y);
+        c.setAttribute("r", "5");
+        c.setAttribute("fill", "url(#goldPad)");
+        c.setAttribute("stroke", "#05080c");
+        c.setAttribute("stroke-width", "1");
+
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", "280");
+        t.setAttribute("y", y + 3);
+        t.setAttribute("font-family", "'JetBrains Mono'");
+        t.setAttribute("font-size", "7");
+        t.setAttribute("fill", "#cbd5e1");
+        t.setAttribute("text-anchor", "end");
+        t.textContent = name;
+
+        rHeader.appendChild(c);
+        rHeader.appendChild(t);
+      });
+    }
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && hw.currentTab === 'games') {
+        e.preventDefault();
+        handleGameTrigger();
+      }
+      if (e.key === 'Escape') closeResumeModal();
+    });
+
+    // Initialize
+    function init() {
+      renderVerticalPins();
+      switchTab('rf');
+      selectProject(1);
+      loadEditorSketch();
+      logTerminal("[SYSTEM] Engineering workbench ready. Plug in USB-C cable or select any hardware block to inspect.");
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
